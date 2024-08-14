@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <title>Y&amp;Y Beauty Salon</title>
+   <!--
+   Y&Y Beauty Salon book now page
+   Filename: booknow.html
+   Author:   Lazaro Martinez
+   Date:     05/05/2024
+   This page shows a pricing table as well as an appointment setting form.
+   -->
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width" />
+   <script src="modernizr.custom.40753.js"></script>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+   <link rel="shortcut icon" href="images/favicon.png">
+   <link rel="apple-touch-icon" href="images/favicon.png" />
+   <link rel="icon" sizes="192x192" href="images/favicon.png" />
+   <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+   <div class="container">
+      <p class="skipnavigation"><a href="#contentstart">Skip navigation</a></p>
+      <header>
+         <h1>
+            <a href="index.html">
+               <img src="images/LOGO-DEF-POS.png" width="380" height="200" alt="Y&#38;Y Beauty Salon" />
+            </a>
+         </h1>
+      </header>
+      <nav class="sitenavigation">
+         <p><a href="index.html">Home</a></p>
+         <p><a href="gallery.html">Gallery</a></p>
+         <p><a href="booknow.html">Book Now</a></p>
+         <p><a href="contactus.html">Contact Us</a></p>
+         <p>
+            <a href="https://www.accuweather.com/en/us/las-vegas/89101/weather-forecast/329506"
+               target="_blank">Weather</a>
+         </p>
+         <p>
+            <a href="https://maps.app.goo.gl/Cvqei1CkPNSMibtw6" target="_blank">Directions</a>
+         </p>
+      </nav>
+      <article>
+         <h2 class="rates">OUR RATES</h2>
+         <table>
+            <thead>
+               <tr>
+                  <th colspan="8">Services</th>
+               </tr>
+               <tr>
+                  <th colspan="2">Manicure</th>
+                  <th colspan="2">Pedicure</th>
+                  <th colspan="2">Hair</th>
+                  <th colspan="2">Lashes</th>
+               </tr>
+               <tr>
+                  <th>Gel</th>
+                  <th>Regular</th>
+                  <th>Gel</th>
+                  <th>Regular</th>
+                  <th>Color</th>
+                  <th>Blowout</th>
+                  <th>Classic</th>
+                  <th>Volume</th>
+               </tr>
+            <tbody>
+               <tr>
+                  <td>$45</td>
+                  <td>$30</td>
+                  <td>$45</td>
+                  <td>$35</td>
+                  <td>$80</td>
+                  <td>$50</td>
+                  <td>$100</td>
+                  <td>$150</td>
+               </tr>
+               <tr>
+                  <th colspan="2">Gel Mani Pedi</th>
+                  <th colspan="2">Regular Mani Pedi</th>
+                  <th colspan="2">Combo</th>
+                  <th colspan="2">Hybrid</th>
+               </tr>
+               <tr>
+                  <td colspan="2">$80</td>
+                  <td colspan="2">$65</td>
+                  <td colspan="2">$120</td>
+                  <td colspan="2">$125</td>
+               </tr>
+               <tr>
+                  <th rowspan="2">Offers</th>
+                  <th>Nails &amp; Hair</th>
+                  <th colspan="2">Nails &amp; Lashes</th>
+                  <th colspan="2">Hair &amp; Lashes</th>
+                  <th colspan="2">Full Pampering</th>
+               </tr>
+               <tr>
+                  <td>$180</td>
+                  <td colspan="2">$180</td>
+                  <td colspan="2">$220</td>
+                  <td colspan="2">$300</td>
+               </tr>
+            </tbody>
+            </thead>
+         </table>
+         <div class="appointment">
+            <h2>BOOK NOW</h2>
+            <form action="results.html">
+               <fieldset class="contactinfo">
+                  <legend>Contact Information</legend>
+                  <label for="nameinput">
+                     Name
+                     <input type="text" name="name" id="nameinput" placeholder="First and last name">
+                  </label>
+                  <label for="phoneinput">
+                     Phone
+                     <input type="tel" name="phone" id="phoneinput" placeholder="(123) 456-7890">
+                  </label>
+               </fieldset>
+               <fieldset class="reserveinfo">
+                  <legend>Appointment Information</legend>
+                  <fieldset class="schedule">
+                     <legend>Schedule</legend>
+                     <div class="date-picker">
+                        <label for="month"></label>Month
+                        <select id="month" name="month">
+                           <option value="01">January</option>
+                           <option value="02">February</option>
+                           <option value="03">March</option>
+                           <option value="04">April</option>
+                           <option value="05">May</option>
+                           <option value="06">June</option>
+                           <option value="07">July</option>
+                           <option value="08">August</option>
+                           <option value="09">September</option>
+                           <option value="10">October</option>
+                           <option value="11">November</option>
+                           <option value="12">December</option>
+                        </select>
+                        <label for="day"></label>Day
+                        <select id="day" name="day">
+                           <option value="01">1</optio>
+                           <option value="02">2</option>
+                           <option value="03">3</option>
+                           <option value="04">4</option>
+                           <option value="05">5</option>
+                           <option value="06">6</option>
+                           <option value="07">7</option>
+                           <option value="08">8</option>
+                           <option value="09">9</option>
+                           <option value="10">10</option>
+                           <option value="11">11</option>
+                           <option value="12">12</option>
+                           <option value="13">13</option>
+                           <option value="14">14</option>
+                           <option value="15">15</option>
+                           <option value="16">16</option>
+                           <option value="17">17</option>
+                           <option value="18">18</option>
+                           <option value="19">19</option>
+                           <option value="20">20</option>
+                           <option value="21">21</option>
+                           <option value="22">22</option>
+                           <option value="23">23</option>
+                           <option value="24">24</option>
+                           <option value="25">25</option>
+                           <option value="26">26</option>
+                           <option value="27">27</option>
+                           <option value="28">28</option>
+                           <option value="29">29</option>
+                           <option value="30">30</option>
+                           <option value="31">31</option>
+                        </select>
+                        <label for="year"></label>Year
+                        <select id="year" name="year">
+                           <option value="2024">2024</option>
+                           <option value="2025">2025</option>
+                        </select>
+                     </div>
+                  </fieldset>
+                  <fieldset class="services">
+                     <legend>Services</legend>
+                     <label for="mani">
+                        <input type="checkbox" id="mani" value="Manicure" name="service">
+                        Manicure
+                     </label>
+                     <label for="pedi">
+                        <input type="checkbox" id="pedi" value="Pedicure" name="service">
+                        Pedicure
+                     </label>
+                     <label for="hair">
+                        <input type="checkbox" id="hair" value="Hair" name="service">
+                        Hair
+                     </label>
+                     <label for="lashes">
+                        <input type="checkbox" id="lashes" value="Lashes" name="service">
+                        Lashes
+                     </label>
+                  </fieldset>
+                  <fieldset class="occasioninfo">
+                     <legend>What's the occasion?</legend>
+                     <label for="birthday">
+                        <input type="radio" name="occasion" id="birthday" value="Birthday" checked>
+                        Birthday
+                     </label>
+                     <label for="celebration">
+                        <input type="radio" name="occasion" id="celebration" value="Celebration">
+                        Celebration
+                     </label>
+                     <label for="vacation">
+                        <input type="radio" name="occasion" id="vacation" value="Vacation">
+                        Vacation
+                     </label>
+                  </fieldset>
+               </fieldset>
+               <fieldset class="additionalinfo">
+                  <legend>Special requests</legend>
+                  <label for="feedback">
+                     <textarea name="feedback" id="feedback" rows="4" cols="55"></textarea>
+                  </label>
+               </fieldset>
+               <fieldset class="submitbutton">
+                  <input type="submit" id="submit" value="Submit">
+               </fieldset>
+               <fieldset class="resetbutton">
+                  <input type="reset" id="reset" value="Reset">
+               </fieldset>
+            </form>
+         </div>
+      </article>
+      <footer>
+         <p>
+            Lazaro Martinez &#8226; CIT 151 &#8226; Spring 2024
+         </p>
+      </footer>
+   </div>
+</body>
+
+</html>
