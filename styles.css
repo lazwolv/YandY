@@ -17,9 +17,9 @@ tr, th, tbody, td {
 
 /* universal styles */
 html {
-  font-size: 16px;
+  font-size: 14px;
   background-color: #DBD8F0;
-  font-family: 'Dancing Script', Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   max-width: 100%;
 }
 
@@ -41,7 +41,7 @@ header {
   max-width: 100%;
 }
 h1 {
-  padding: 0.6em 0.4em 0.4em;
+  padding: 0.5em;
   text-align: center;
   color: black;
   font-size: 3.4em;
@@ -51,12 +51,16 @@ h1 {
 nav.sitenavigation {
   color: #FFCEFF;
   text-align: center;
-  font-family: 'DM Serif Display', Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   background-color: #EAC5D8;
 }
 nav.sitenavigation p {
   display: inline-block;
   margin: 0.5em;
+  vertical-align: middle;
+}
+nav.sitenavigation img {
+  vertical-align: middle;
 }
 nav.sitenavigation a:link {
   text-decoration: none;
@@ -89,16 +93,28 @@ p {
 article {
   padding: 0 3% 1em;
 }
+.side-by-side {
+   display: flex;
+   gap: 2em; /* Space between the two sections */
+}
+
+.section {
+   width: 45%; /* Adjust the width as needed */
+}
+
+.section h2 {
+   margin-bottom: 0.5em;
+}
 h2 {
   text-align: center;
-  padding: 0.4em 0.4em 0;
+  padding-top: 1.5em;
   font-size: 1.6em;
 }
 h3 {
   font-size: 1.6em;
 }
 article p {
-  padding-top: 1em;
+  padding-top: 0.5em;
 }
 .gallery {
   display: inline-block;
@@ -168,6 +184,19 @@ th {
   font-size: 1.5em;
 }
 
+/* contact us area */
+.info{
+  /*display: flex;*/
+  align-items: center; /* Vertically centers the child divs */
+  justify-content: space-around; /* Adds space between the child divs */
+  font-size: 0.8em;
+  margin: 3em; /* Adjust the margin as needed */
+}
+.info div {
+  margin-left: 4em;
+}
+
+
 /* footer section */
 footer {
   padding: 0.5em;
@@ -208,6 +237,9 @@ footer p {
   }
 }
 @media screen and (max-width: 767px), print {
+  html{
+    font-size: 12px;
+  }
   table,
   .rates {
     display: none;
@@ -234,7 +266,7 @@ footer p {
     font-size: 0.7em;
   }
   img {
-    width: 100%;
+    width: 40%;
     height: auto;
   }
 }
