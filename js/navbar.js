@@ -1,9 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const navbarToggle = document.querySelector('.navbar-toggle');
   const navMenu = document.querySelector('.nav-menu');
+  const navToggle = document.querySelector('.navbar-toggle');
+  const loginButton = document.querySelector('.nav-menu a[href="login.html"]');
 
-  navbarToggle.addEventListener('click', function() {
-    navMenu.classList.toggle('active');
-    navbarToggle.classList.toggle('active');
+  navToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+      navToggle.classList.toggle('active');
   });
+
+  // Check if user is logged in
+  if (localStorage.getItem('user')) {
+      const user = JSON.parse(localStorage.getItem('user'));
+      loginButton.textContent = `Hello, ${user.name}`;
+      loginButton.href = '#';
+  }
 });

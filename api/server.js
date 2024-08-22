@@ -4,16 +4,14 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 // CORS configuration
 app.use(cors({
-    origin: '*'
+    origin: 'http://localhost:5500'
 }));
 
-
 // Middleware
-//app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // MongoDB connection
@@ -45,5 +43,5 @@ app.post('/signup', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on http://localhost:${port}`);
 });

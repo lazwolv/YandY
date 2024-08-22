@@ -12,7 +12,7 @@
     <script src="js/modernizr.custom.40753.js"></script>
     <script src="js/navbar.js" defer></script>
     <script src="js/language-switcher.js" defer></script>
-    <script src="js/signup.js" defer></script>
+    <script src="js/signup-form.js"></script>
 </head>
 
 <body>
@@ -37,13 +37,12 @@
             </nav>
         </header>
         <main>
-            <form class="signup-form">
+            <form class="login-form">
                 <h2 data-i18n="signUp">Sign Up</h2>
                 <input type="text" placeholder="Full Name" required>
-                <input type="email" placeholder="Email" required>
+                <input type="tel" placeholder="Phone Number" pattern="[0-9]{10}" required>
                 <input type="text" placeholder="Username" required>
                 <input type="password" placeholder="Password" required>
-                <input type="password" placeholder="Confirm Password" required>
                 <button type="submit" data-i18n="signUp">Sign Up</button>
                 <p>Already have an account? <a href="login.html" data-i18n="login">Login</a></p>
             </form>

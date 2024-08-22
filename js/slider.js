@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
   function createSlider(sliderClass) {
-    const slider = document.querySelector(`.${sliderClass}`);
-    const prevButton = slider.parentElement.querySelector('.prev');
-    const nextButton = slider.parentElement.querySelector('.next');
+    const sliderContainer = document.querySelector(`.${sliderClass}`).closest('.slider-container');
+    const slider = sliderContainer.querySelector(`.${sliderClass}`);
+    const prevButton = sliderContainer.querySelector('.prev');
+    const nextButton = sliderContainer.querySelector('.next');
     let slideIndex = 0;
 
     function showSlide(index) {
@@ -19,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
       showSlide(slideIndex);
     });
   }
-
   createSlider('place-slider');
   createSlider('work-slider');
   createSlider('team-slider');
