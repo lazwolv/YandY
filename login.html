@@ -2,76 +2,52 @@
 <html lang="en">
 
 <head>
-    <title>Y&amp;Y Beauty Salon</title>
-    <!--
-   Y&Y Beauty Salon main web page
-   Filename: index.html
-   Author:   Lazaro Martinez
-   Date:     05/05/2024
-   This is the main page and shows the mission statement of the company
-   as well as what's expected of their customers.
-   -->
+    <title>Y&Y Beauty Salon</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <script src="modernizr.custom.40753.js"></script>
     <link rel="shortcut icon" href="images/favicon.png">
     <link rel="apple-touch-icon" href="images/favicon.png" />
     <link rel="icon" sizes="192x192" href="images/favicon.png" />
     <link rel="stylesheet" href="styles.css">
+    <script src="js/modernizr.custom.40753.js"></script>
+    <script src="js/navbar.js" defer></script>
+    <script src="js/language-switcher.js" defer></script>
 </head>
+
 
 <body>
     <div class="container">
-        <p class="skipnavigation"><a href="#contentstart">Skip navigation</a></p>
         <header>
-            <nav class="sitenavigation">
-                <p><a>
-                        <img src="images/LOGO-DEF-POS.png" width="180" height="105" alt="Y&#38;Y Beauty Salon" />
-                    </a>
-                </p>
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img src="images/LOGO-DEF-POS.png" alt="Y&Y Beauty Salon" width="100" height="58">
+                </a>
+                <button class="navbar-toggle" aria-label="Toggle navigation">
+                    <span class="burger-icon"></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.html" data-i18n="home">Home</a></li>
+                    <li><a href="booknow.html" data-i18n="bookNow">Book Now</a></li>
+                    <li><a href="login.html" data-i18n="login">Login</a></li>
+                </ul>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                </select>
             </nav>
         </header>
-        <article>
-            <form class="login">
-                <h2>Login</h2>
-                <div id="login">
-                    <input type="text" placeholder="Username">
-                </div>
-                <div id="login">
-                    <input type="password" placeholder="Password">
-                </div>
-                <input type="submit" value="Login" class="button">
-                <br>
-                Don't have an account?</br>
-                <a href="#">Sign up</a>
-    </div>
-    </form>
-    </article>
-    <div class="info">
-        <div>
-            <p>
-                <strong>Mon - Fri:</strong>
-                <a>8:00AM - 6:00PM</a>
-            </p>
-            <p>
-                <strong>Phone:</strong>
-                <a href="tel:7022345489">(702) 234-5489</a>
-            </p>
-            <p>
-                <strong>Email:</strong>
-                <a href="mailto:yybeauty@salon.com">yybeauty@salon.com</a>
-            </p>
-            <p>
-                <strong>Address:</strong>
-                <a href="https://maps.app.goo.gl/Cvqei1CkPNSMibtw6" target="_blank">1820 S Rainbow Blvd Unit 100</a>
-            </p>
-        </div>
-    </div>
-    <footer>
-        <p>
-            &copy 2024 Y&Y Beauty Salon &#8226; All Rights Reserved
-        </p>
-    </footer>
+        <main>
+            <form class="login-form">
+                <h2 data-i18n="login">Login</h2>
+                <input type="text" placeholder="Username" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" data-i18n="login">Login</button>
+                <p>Don't have an account? <a href="#" data-i18n="signUp">Sign up</a></p>
+            </form>
+        </main>
+        <footer>
+            <p data-i18n="footer">© 2024 Y&Y Beauty Salon • All Rights Reserved</p>
+        </footer>
     </div>
 </body>
 

@@ -2,38 +2,38 @@
 <html lang="en">
 
 <head>
-   <title>Y&amp;Y Beauty Salon</title>
-   <!--
-   Y&Y Beauty Salon results page
-   Filename: results.html
-   Author:   Lazaro Martinez
-   Date:     05/05/2024
-   This page shows the results of the information entered in the form on booknow.html.
-   -->
+   <title>Y&Y Beauty Salon</title>
    <meta charset="utf-8" />
    <meta name="viewport" content="width=device-width" />
-   <script src="modernizr.custom.40753.js"></script>
    <link rel="shortcut icon" href="images/favicon.png">
    <link rel="apple-touch-icon" href="images/favicon.png" />
    <link rel="icon" sizes="192x192" href="images/favicon.png" />
    <link rel="stylesheet" href="styles.css">
+   <script src="js/modernizr.custom.40753.js"></script>
+   <script src="js/navbar.js" defer></script>
+   <script src="js/language-switcher.js" defer></script>
 </head>
 
 <body>
    <div class="container">
       <p class="skipnavigation"><a href="#contentstart">Skip navigation</a></p>
       <header>
-         <nav class="sitenavigation">
-            <p><a href="index.html">Home</a></p>
-            <p><a href="services.html">Services</a></p>
-            <p><a href="index.html">
-                  <img src="images/LOGO-DEF-POS.png" width="180" height="105" alt="Y&#38;Y Beauty Salon" />
-               </a>
-            </p>
-            <p><a href="gallery.html">Gallery</a></p>
-            </p>
-            <p><a href="booknow.html">Book Now</a></p>
-            <p><a href="login.html">Login</a></p>
+         <nav class="navbar">
+            <a href="index.html" class="logo">
+               <img src="images/LOGO-DEF-POS.png" alt="Y&Y Beauty Salon" width="100" height="58">
+            </a>
+            <button class="navbar-toggle" aria-label="Toggle navigation">
+               <span class="burger-icon"></span>
+            </button>
+            <ul class="nav-menu">
+               <li><a href="index.html" data-i18n="home">Home</a></li>
+               <li><a href="booknow.html" data-i18n="bookNow">Book Now</a></li>
+               <li><a href="login.html" data-i18n="login">Login</a></li>
+            </ul>
+            <select id="languageSelect">
+               <option value="en">English</option>
+               <option value="es">Español</option>
+            </select>
          </nav>
       </header>
       <article id="contentstart">
@@ -77,10 +77,11 @@
          </div>
       </div>
       <footer>
-         <p>
-            &copy 2024 Y&Y Beauty Salon &#8226; All Rights Reserved
+         <p data-i18n="footer">
+            © 2024 Y&Y Beauty Salon • All Rights Reserved
          </p>
       </footer>
+   </div>
 </body>
 
 </html>

@@ -1,103 +1,148 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
-   <title>Y&amp;Y Beauty Salon</title>
-   <!--
-   Y&Y Beauty Salon main web page
-   Filename: index.html
-   Author:   Lazaro Martinez
-   Date:     05/05/2024
-   This is the main page and shows the mission statement of the company
-   as well as what's expected of their customers.
-   -->
+   <title>Y&Y Beauty Salon</title>
    <meta charset="utf-8" />
    <meta name="viewport" content="width=device-width" />
-   <script src="modernizr.custom.40753.js"></script>
    <link rel="shortcut icon" href="images/favicon.png">
    <link rel="apple-touch-icon" href="images/favicon.png" />
    <link rel="icon" sizes="192x192" href="images/favicon.png" />
    <link rel="stylesheet" href="styles.css">
+   <script src="js/language-switcher.js" defer></script>
+   <script src="js/navbar.js" defer></script>
+   <script src="js/slider.js" defer></script>
 </head>
-
 <body>
    <div class="container">
-      <p class="skipnavigation"><a href="#contentstart">Skip navigation</a></p>
-      <header>
-         <nav class="sitenavigation">
-            <p><a href="index.html">Home</a></p>
-            <p><a href="services.html">Services</a></p>
-            <p><a href="index.html">
-                  <img src="images/LOGO-DEF-POS.png" width="180" height="105" alt="Y&#38;Y Beauty Salon" />
+       <header>
+           <nav class="navbar">
+               <a href="index.html" class="logo">
+                   <img src="images/LOGO-DEF-POS.png" alt="Y&Y Beauty Salon" width="100" height="58">
                </a>
-            </p>
-            <p><a href="gallery.html">Gallery</a></p>
-            </p>
-            <p><a href="booknow.html">Book Now</a></p>
-            <p><a href="login.html">Login</a></p>
-         </nav>
-      </header>
-      <article>
-         <div class="side-by-side">
-            <div class="section">
-               <h2 id="contentstart">OUR MISSION</h2>
-               <p>
-                  At Y&Y Beauty Salon, we are dedicated to empowering women to express their unique beauty and
-                  resilience
-                  through personalized nail designs and exceptional services. Our salon serves as a tranquil sanctuary
-                  where
-                  clients can indulge in self-care, from luxurious manicures and pedicures to hair and lash treatments,
-                  all
-                  crafted to enhance well-being and serenity. With a commitment to excellence and personalized
-                  attention, we
-                  strive to exceed expectations, creating an environment where every visit offers renewal, comfort, and
-                  lasting memories.
-               </p>
-            </div>
-            <div class="section">
-               <h2>OUR EXPECTATIONS</h2>
-               <p>
-                  At Y&Y Beauty Salon, we value every client interaction and aim to create an atmosphere of mutual
-                  respect and
-                  professionalism. We kindly ask our patrons to arrive on time for appointments to ensure exceptional
-                  service,
-                  while fostering an environment of warmth and courtesy for both staff and customers. Open communication
-                  and
-                  feedback are encouraged, helping us continually refine our services. By upholding respect,
-                  punctuality, and
-                  collaboration, we strive to make every visit rejuvenating and reflective of our commitment to
-                  excellence in
-                  beauty and hospitality.
-               </p>
-            </div>
-         </div>
-      </article>
-      <div class="info">
-         <div>
-            <p>
-               <strong>Mon - Fri:</strong>
-               <a>8:00AM - 6:00PM</a>
-            </p>
-            <p>
-               <strong>Phone:</strong>
-               <a href="tel:7022345489">(702) 234-5489</a>
-            </p>
-            <p>
-               <strong>Email:</strong>
-               <a href="mailto:yybeauty@salon.com">yybeauty@salon.com</a>
-            </p>
-            <p>
-               <strong>Address:</strong>
-               <a href="https://maps.app.goo.gl/Cvqei1CkPNSMibtw6" target="_blank">1820 S Rainbow Blvd Unit 100</a>
-            </p>
-         </div>
-      </div>
-      <footer>
-         <p>
-            &copy 2024 Y&Y Beauty Salon &#8226; All Rights Reserved
-         </p>
-      </footer>
+               <button class="navbar-toggle" aria-label="Toggle navigation">
+                   <span class="burger-icon"></span>
+               </button>
+               <ul class="nav-menu">
+                   <li><a href="index.html" data-i18n="home">Home</a></li>
+                   <li><a href="booknow.html" data-i18n="bookNow">Book Now</a></li>
+                   <li><a href="login.html" data-i18n="login">Login</a></li>
+               </ul>
+               <select id="languageSelect">
+                   <option value="en">English</option>
+                   <option value="es">Español</option>
+               </select>
+           </nav>
+       </header>
+        
+       <main>
+           <div class="side-by-side">
+               <section id="our-mission">
+                   <h2 data-i18n="ourMission">Our Mission</h2>
+                   <p>
+                       At Y&Y Beauty Salon, we are dedicated to empowering women to express their unique beauty and resilience through personalized nail designs and exceptional services. Our salon serves as a tranquil sanctuary where clients can indulge in self-care, from luxurious manicures and pedicures to hair and lash treatments, all crafted to enhance well-being and serenity. With a commitment to excellence and personalized attention, we strive to exceed expectations, creating an environment where every visit offers renewal, comfort, and lasting memories.
+                   </p>
+               </section>
+               <section id="our-expectations">
+                   <h2 data-i18n="ourExpectations">Our Expectations</h2>
+                   <p>
+                       At Y&Y Beauty Salon, we value every client interaction and aim to create an atmosphere of mutual respect and professionalism. We kindly ask our patrons to arrive on time for appointments to ensure exceptional service, while fostering an environment of warmth and courtesy for both staff and customers. Open communication and feedback are encouraged, helping us continually refine our services. By upholding respect, punctuality, and collaboration, we strive to make every visit rejuvenating and reflective of our commitment to excellence in beauty and hospitality.
+                   </p>
+               </section>
+           </div>
+            
+           <div class="sliders-container">
+               <section id="our-place">
+                   <h2 data-i18n="ourPlace">Our Place</h2>
+                   <div class="slider-container">
+                       <div class="slider place-slider">
+                           <img src="images/Salon/salon1.jpg" alt="Salon 1">
+                           <img src="images/Salon/salon2.jpg" alt="Salon 2">
+                           <img src="images/Salon/salon3.jpg" alt="Salon 3">
+                           <img src="images/Salon/salon4.jpg" alt="Salon 4">
+                       </div>
+                       <button class="slider-button prev"><</button>
+                       <button class="slider-button next">></button>
+                   </div>
+               </section>
+                
+               <section id="our-work">
+                   <h2 data-i18n="ourWork">Our Work</h2>
+                   <div class="slider-container">
+                       <div class="slider work-slider">
+                           <img src="images/Nails/nails1.jpg" alt="Nails 1">
+                           <img src="images/Nails/nails2.jpg" alt="Nails 2">
+                           <img src="images/Nails/nails3.jpg" alt="Nails 3">
+                           <img src="images/Nails/nails4.jpg" alt="Nails 4">
+                       </div>
+                       <button class="slider-button prev"><</button>
+                       <button class="slider-button next">></button>
+                   </div>
+               </section>
+                
+               <section id="our-team">
+                   <h2 data-i18n="ourTeam">Our Team</h2>
+                   <div class="slider-container">
+                       <div class="slider team-slider">
+                           <img src="images/Team/team 1.jpg" alt="Team 1">
+                           <img src="images/Team/team 2.jpg" alt="Team 2">
+                           <img src="images/Team/team 3.jpg" alt="Team 3">
+                           <img src="images/Team/team 4.jpg" alt="Team 4">
+                       </div>
+                       <button class="slider-button prev"><</button>
+                       <button class="slider-button next">></button>
+                   </div>
+               </section>
+           </div>
+            
+           <section id="our-services">
+               <h2 data-i18n="ourServices">Our Services</h2>
+               <table>
+                   <thead>
+                       <tr>
+                           <th colspan="8">Services</th>
+                       </tr>
+                       <tr>
+                           <th colspan="2">Manicure</th>
+                           <th colspan="2">Pedicure</th>
+                           <th colspan="2">Hair</th>
+                           <th colspan="2">Lashes</th>
+                       </tr>
+                       <tr>
+                           <th>Gel</th>
+                           <th>Regular</th>
+                           <th>Gel</th>
+                           <th>Regular</th>
+                           <th>Color</th>
+                           <th>Blowout</th>
+                           <th>Classic</th>
+                           <th>Volume</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <tr>
+                           <td>$45</td>
+                           <td>$30</td>
+                           <td>$45</td>
+                           <td>$35</td>
+                           <td>$80</td>
+                           <td>$50</td>
+                           <td>$100</td>
+                           <td>$150</td>
+                       </tr>
+                   </tbody>
+               </table>
+           </section>
+       </main>
+        
+       <footer>
+           <div class="info">
+               <p><strong>Mon - Fri:</strong> 8:00AM - 6:00PM</p>
+               <p><strong>Phone:</strong> <a href="tel:7022345489">(702) 234-5489</a></p>
+               <p><strong>Email:</strong> <a href="mailto:yybeauty@salon.com">yybeauty@salon.com</a></p>
+               <p><strong>Address:</strong> <a href="https://maps.app.goo.gl/Cvqei1CkPNSMibtw6" target="_blank">1820 S Rainbow Blvd Unit 100</a></p>
+           </div>
+           <p data-i18n="footer">© 2024 Y&Y Beauty Salon • All Rights Reserved</p>
+       </footer>
    </div>
 </body>
-
 </html>

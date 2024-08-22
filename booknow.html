@@ -2,165 +2,94 @@
 <html lang="en">
 
 <head>
-   <title>Y&amp;Y Beauty Salon</title>
-   <!--
-   Y&Y Beauty Salon book now 
-   Filename: booknow.html
-   Author:   Lazaro Martinez
-   Date:     05/05/2024
-   This page shows a pricing table as well as an appointment setting form.
-   -->
+   <title>Y&Y Beauty Salon</title>
    <meta charset="utf-8" />
    <meta name="viewport" content="width=device-width" />
-   <script src="modernizr.custom.40753.js"></script>
    <link rel="shortcut icon" href="images/favicon.png">
    <link rel="apple-touch-icon" href="images/favicon.png" />
    <link rel="icon" sizes="192x192" href="images/favicon.png" />
    <link rel="stylesheet" href="styles.css">
+   <script src="js/modernizr.custom.40753.js"></script>
+   <script src="js/navbar.js" defer></script>
+   <script src="js/language-switcher.js" defer></script>
 </head>
 
 <body>
    <div class="container">
       <p class="skipnavigation"><a href="#contentstart">Skip navigation</a></p>
       <header>
-         <nav class="sitenavigation">
-            <p><a href="index.html">Home</a></p>
-            <p><a href="services.html">Services</a></p>
-            <p><a href="index.html">
-                  <img src="images/LOGO-DEF-POS.png" width="180" height="105" alt="Y&#38;Y Beauty Salon" />
-               </a>
-            </p>
-            <p><a href="gallery.html">Gallery</a></p>
-            </p>
-            <p><a href="booknow.html">Book Now</a></p>
-            <p><a href="login.html">Login</a></p>
+         <nav class="navbar">
+            <a href="index.html" class="logo">
+               <img src="images/LOGO-DEF-POS.png" alt="Y&Y Beauty Salon" width="100" height="58">
+            </a>
+            <button class="navbar-toggle" aria-label="Toggle navigation">
+               <span class="burger-icon"></span>
+            </button>
+            <ul class="nav-menu">
+               <li><a href="index.html" data-i18n="home">Home</a></li>
+               <li><a href="booknow.html" data-i18n="bookNow">Book Now</a></li>
+               <li><a href="login.html" data-i18n="login">Login</a></li>
+            </ul>
+            <select id="languageSelect">
+               <option value="en">English</option>
+               <option value="es">Español</option>
+            </select>
          </nav>
       </header>
       <article>
-         <div class="appointment">
-            <h2>BOOK NOW</h2>
-            <form action="results.html">
-               <fieldset class="contactinfo">
-                  <legend>Contact Information</legend>
-                  <label for="nameinput">
-                     Name
-                     <input type="text" name="name" id="nameinput" placeholder="First and last name">
-                  </label>
-                  <label for="phoneinput">
-                     Phone
-                     <input type="tel" name="phone" id="phoneinput" placeholder="(123) 456-7890">
-                  </label>
-               </fieldset>
-               <fieldset class="reserveinfo">
-                  <legend>Appointment Information</legend>
-                  <fieldset class="schedule">
-                     <legend>Schedule</legend>
-                     <div class="date-picker">
-                        <label for="month"></label>Month
-                        <select id="month" name="month">
-                           <option value="01">January</option>
-                           <option value="02">February</option>
-                           <option value="03">March</option>
-                           <option value="04">April</option>
-                           <option value="05">May</option>
-                           <option value="06">June</option>
-                           <option value="07">July</option>
-                           <option value="08">August</option>
-                           <option value="09">September</option>
-                           <option value="10">October</option>
-                           <option value="11">November</option>
-                           <option value="12">December</option>
-                        </select>
-                        <label for="day"></label>Day
-                        <select id="day" name="day">
-                           <option value="01">1</optio>
-                           <option value="02">2</option>
-                           <option value="03">3</option>
-                           <option value="04">4</option>
-                           <option value="05">5</option>
-                           <option value="06">6</option>
-                           <option value="07">7</option>
-                           <option value="08">8</option>
-                           <option value="09">9</option>
-                           <option value="10">10</option>
-                           <option value="11">11</option>
-                           <option value="12">12</option>
-                           <option value="13">13</option>
-                           <option value="14">14</option>
-                           <option value="15">15</option>
-                           <option value="16">16</option>
-                           <option value="17">17</option>
-                           <option value="18">18</option>
-                           <option value="19">19</option>
-                           <option value="20">20</option>
-                           <option value="21">21</option>
-                           <option value="22">22</option>
-                           <option value="23">23</option>
-                           <option value="24">24</option>
-                           <option value="25">25</option>
-                           <option value="26">26</option>
-                           <option value="27">27</option>
-                           <option value="28">28</option>
-                           <option value="29">29</option>
-                           <option value="30">30</option>
-                           <option value="31">31</option>
-                        </select>
-                        <label for="year"></label>Year
-                        <select id="year" name="year">
-                           <option value="2024">2024</option>
-                           <option value="2025">2025</option>
-                        </select>
-                     </div>
-                  </fieldset>
-                  <fieldset class="services">
-                     <legend>Services</legend>
-                     <label for="mani">
-                        <input type="checkbox" id="mani" value="Manicure" name="service">
-                        Manicure
-                     </label>
-                     <label for="pedi">
-                        <input type="checkbox" id="pedi" value="Pedicure" name="service">
-                        Pedicure
-                     </label>
-                     <label for="hair">
-                        <input type="checkbox" id="hair" value="Hair" name="service">
-                        Hair
-                     </label>
-                     <label for="lashes">
-                        <input type="checkbox" id="lashes" value="Lashes" name="service">
-                        Lashes
-                     </label>
-                  </fieldset>
-                  <fieldset class="occasioninfo">
-                     <legend>What's the occasion?</legend>
-                     <label for="birthday">
-                        <input type="radio" name="occasion" id="birthday" value="Birthday" checked>
-                        Birthday
-                     </label>
-                     <label for="celebration">
-                        <input type="radio" name="occasion" id="celebration" value="Celebration">
-                        Celebration
-                     </label>
-                     <label for="vacation">
-                        <input type="radio" name="occasion" id="vacation" value="Vacation">
-                        Vacation
-                     </label>
-                  </fieldset>
-               </fieldset>
-               <fieldset class="additionalinfo">
-                  <legend>Special requests</legend>
-                  <label for="feedback">
-                     <textarea name="feedback" id="feedback" rows="4" cols="55"></textarea>
-                  </label>
-               </fieldset>
-               <fieldset class="submitbutton">
-                  <input type="submit" id="submit" value="Submit">
-               </fieldset>
-               <fieldset class="resetbutton">
-                  <input type="reset" id="reset" value="Reset">
-               </fieldset>
-            </form>
-         </div>
+         <form class="login-form booking-form">
+            <h2 data-i18n="bookNow">BOOK NOW</h2>
+            <input type="text" name="name" id="nameinput" placeholder="First and last name" required>
+            <input type="tel" name="phone" id="phoneinput" placeholder="(123) 456-7890" required>
+            <select id="month" name="month" required>
+               <option value="">Select a month</option>
+               <option value="01">January</option>
+               <option value="02">February</option>
+               <option value="03">March</option>
+               <option value="04">April</option>
+               <option value="05">May</option>
+               <option value="06">June</option>
+               <option value="07">July</option>
+               <option value="08">August</option>
+               <option value="09">September</option>
+               <option value="10">October</option>
+               <option value="11">November</option>
+               <option value="12">December</option>
+            </select>
+            <select id="day" name="day" required>
+               <option value="">Select a day</option>
+               <option value="01">1</option>
+               <option value="02">2</option>
+               <option value="03">3</option>
+               <option value="04">4</option>
+               <option value="05">5</option>
+               <option value="06">6</option>
+               <option value="07">7</option>
+               <option value="08">8</option>
+               <option value="09">9</option>
+               <option value="10">10</option>
+               <option value="11">11</option>
+               <option value="12">12</option>
+               <option value="13">13</option>
+               <option value="14">14</option>
+               <option value="15">15</option>
+               <option value="16">16</option>
+               <option value="17">17</option>
+               <option value="18">18</option>
+               <option value="19">19</option>
+               <option value="20">20</option>
+               <option value="21">21</option>
+               <option value="22">22</option>
+               <option value="23">23</option>
+               <option value="24">24</option>
+               <option value="25">25</option>
+               <option value="26">26</option>
+               <option value="27">27</option>
+               <option value="28">28</option>
+               <option value="29">29</option>
+            </select>
+            <button type="submit" data-i18n="bookNow">Book Now</button>
+         </form>
       </article>
       <div class="info">
          <div>
