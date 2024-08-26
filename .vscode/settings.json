@@ -1,0 +1,26 @@
+{
+    "git.ignoreLimitWarning": true,
+    "files.exclude": {
+        "node_modules/": true,
+        "npm-debug.log": true,
+        "yarn-error.log": true,
+        ".env": true,
+        ".vscode/": true,
+        ".idea/": true,
+        "*.swp": true,
+        "*.swo": true,
+        ".DS_Store": true,
+        "Thumbs.db": true,
+        "logs": true,
+        "*.log": true,
+        "dist/": true,
+        "build/": true,
+        "tmp/": true,
+        "temp/": true,
+        "*.sqlite": true,
+        ".aws/": true,
+        "package-lock.json": true,
+        "yarn.lock": true,
+        "config.js": true
+    }
+}

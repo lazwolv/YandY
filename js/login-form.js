@@ -5,8 +5,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(e.target);
         const userData = Object.fromEntries(formData.entries());
         
+        console.log('Login attempt:', userData);
+
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://localhost:5500/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -14,16 +16,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(userData),
             });
             
+            console.log('Response status:', response.status);
+
             if (response.ok) {
                 const user = await response.json();
-                localStorage.setItem('user', JSON.stringify(user));
+                console.log('Login successful:', user);
+                localStorage.setItem('user', JSON.stringify({
+                    username: userData.username,
+                    fullName: user.fullName
+                }));
                 window.location.href = 'index.html';
             } else {
-                alert('Login failed. Please check your credentials and try again.');
+                const errorText = await response.text();
+                console.error('Login failed:', response.status, errorText);
+                alert(`Login failed. Status: ${response.status}. ${errorText || 'No error message provided'}`);
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+            console.error('Network error:', error);
+            alert('A network error occurred. Please check your connection and try again.');
         }
     });
 });
