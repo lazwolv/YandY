@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <title>Y&Y Beauty Salon</title>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width" />
+   <link rel="shortcut icon" href="images/favicon.png">
+   <link rel="apple-touch-icon" href="images/favicon.png" />
+   <link rel="icon" sizes="192x192" href="images/favicon.png" />
+   <link rel="stylesheet" href="styles.css">
+   <script src="js/language-switcher.js" defer></script>
+   <script src="js/navbar.js" defer></script>
+</head>
+
+<body>
+   <div class="container">
+      <p class="skipnavigation"><a href="#contentstart">Skip navigation</a></p>
+      <header>
+         <nav class="navbar">
+            <a href="index.html" class="logo">
+               <img src="images/LOGO-DEF-POS.png" alt="Y&Y Beauty Salon" width="100" height="58">
+            </a>
+            <button class="navbar-toggle" aria-label="Toggle navigation">
+               <span class="burger-icon"></span>
+            </button>
+            <ul class="nav-menu">
+               <li><a href="index.html" data-i18n="home">Home</a></li>
+               <li><a href="booknow.html" data-i18n="bookNow">Book Now</a></li>
+               <li><a href="login.html" data-i18n="login">Login</a></li>
+            </ul>
+            <select id="languageSelect">
+               <option value="en">English</option>
+               <option value="es">Español</option>
+            </select>
+         </nav>
+      </header>
+      <article id="contentstart">
+         <div class="container">
+            <h2>Your form has been submitted</h2>
+            <div class="results">
+               <h3>You entered the following:</h3>
+               <script>
+                  var formData = location.search;
+                  formData = formData.substring(1, formData.length);
+                  while (formData.indexOf("+") !== -1) {
+                     formData = formData.replace("+", " ");
+                  }
+                  formData = decodeURIComponent(formData);
+                  var formArray = formData.split("&");
+                  for (var i = 0; i < formArray.length; i = i + 1) {
+                     document.write("<p>" + formArray[i] + "</p>");
+                  }
+               </script>
+            </div>
+         </div>
+      </article>
+
+      <footer>
+         <div class="info">
+            <p><strong>Mon - Fri:</strong> 8:00AM - 6:00PM</p>
+            <p><strong>Phone:</strong> <a href="tel:7022345489">(702) 234-5489</a></p>
+            <p><strong>Email:</strong> <a href="mailto:yybeauty@salon.com">yybeauty@salon.com</a></p>
+            <p><strong>Address:</strong> <a href="https://maps.app.goo.gl/Cvqei1CkPNSMibtw6" target="_blank">1820 S
+                  Rainbow
+                  Blvd Unit 100</a></p>
+         </div>
+         <p data-i18n="footer">© 2024 Y&Y Beauty Salon • All Rights Reserved</p>
+      </footer>r>
+   </div>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <title>Y&Y Beauty Salon - Book Now</title>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width" />
+   <link rel="shortcut icon" href="images/favicon.png">
+   <link rel="apple-touch-icon" href="images/favicon.png" />
+   <link rel="icon" sizes="192x192" href="images/favicon.png" />
+   <link rel="stylesheet" href="styles.css">
+   <script src="js/language-switcher.js" defer></script>
+   <script src="js/navbar.js" defer></script>
+   <script src="js/booking.js" defer></script>
+</head>
+
+<body>
+   <div class="container">
+      <p class="skipnavigation"><a href="#contentstart">Skip navigation</a></p>
+      <header>
+         <nav class="navbar">
+            <a href="index.html" class="logo">
+               <img src="images/LOGO-DEF-POS.png" alt="Y&Y Beauty Salon" width="100" height="58">
+            </a>
+            <button class="navbar-toggle" aria-label="Toggle navigation">
+               <span class="burger-icon"></span>
+            </button>
+            <ul class="nav-menu">
+               <li><a href="index.html" data-i18n="home">Home</a></li>
+               <li><a href="booknow.html" data-i18n="bookNow">Book Now</a></li>
+               <li><a href="login.html" data-i18n="login">Login</a></li>
+            </ul>
+            <select id="languageSelect">
+               <option value="en">English</option>
+               <option value="es">Español</option>
+            </select>
+         </nav>
+      </header>
+      <main>
+         <form class="booking-form">
+            <h2 data-i18n="bookNow">BOOK NOW</h2>
+            <select id="team-member" name="team-member" required>
+               <option value="">Select a team member</option>
+               <option value="">Yaneidis</option>
+               <option value="">Yailex</option>
+               <option value="">Laura</option>
+               <option value="">Idania</option>
+            </select>
+            <input type="date" id="date" name="date" required>
+            <div id="time-slots"></div>
+            <input type="text" name="name" id="nameinput" placeholder="First and last name" required>
+            <input type="tel" name="phone" id="phoneinput" placeholder="(123) 456-7890" required>
+            <button type="submit" data-i18n="bookNow">Book Now</button>
+         </form>
+      </main>
+      <footer>
+         <div class="info">
+            <p><strong>Mon - Fri:</strong> 8:00AM - 6:00PM</p>
+            <p><strong>Phone:</strong> <a href="tel:7022345489">(702) 234-5489</a></p>
+            <p><strong>Email:</strong> <a href="mailto:yybeauty@salon.com">yybeauty@salon.com</a></p>
+            <p><strong>Address:</strong> <a href="https://maps.app.goo.gl/Cvqei1CkPNSMibtw6" target="_blank">1820 S
+                  Rainbow Blvd Unit 100</a></p>
+         </div>
+         <p data-i18n="footer">© 2024 Y&Y Beauty Salon • All Rights Reserved</p>
+      </footer>
+   </div>
+</body>
+
+</html>
