@@ -1,6 +1,6 @@
 # Y-Y-Beauty-Salon
 
-This is my first full blown project.
+This is my first full project.
 
 It is a beauty salon website. It has been in the making for a while and I am very proud of it.
 
