@@ -5,9 +5,20 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
-const client = twilio(accountSid, authToken);
+// Only initialize Twilio client if credentials are provided and valid
+const hasValidCredentials = accountSid &&
+                             authToken &&
+                             accountSid.startsWith('AC') &&
+                             !accountSid.includes('your_twilio');
+
+const client = hasValidCredentials ? twilio(accountSid, authToken) : null;
 
 const sendVerificationCode = async (phoneNumber, code) => {
+    if (!client) {
+        console.log('Twilio not configured. Verification code:', code);
+        return true; // Return true for development without Twilio
+    }
+
     try {
         await client.messages.create({
             body: `Your Y&Y Beauty verification code is: ${code}. This code will expire in 5 minutes.`,
@@ -22,6 +33,11 @@ const sendVerificationCode = async (phoneNumber, code) => {
 };
 
 const sendAppointmentConfirmation = async (phoneNumber, appointmentDetails) => {
+    if (!client) {
+        console.log('Twilio not configured. Skipping appointment confirmation SMS.');
+        return true;
+    }
+
     try {
         await client.messages.create({
             body: `Your appointment at Y&Y Beauty is confirmed for ${appointmentDetails.date} at ${appointmentDetails.time} with ${appointmentDetails.technician}.`,
@@ -36,6 +52,11 @@ const sendAppointmentConfirmation = async (phoneNumber, appointmentDetails) => {
 };
 
 const sendAppointmentReminder = async (phoneNumber, appointmentDetails) => {
+    if (!client) {
+        console.log('Twilio not configured. Skipping appointment reminder SMS.');
+        return true;
+    }
+
     try {
         await client.messages.create({
             body: `Reminder: You have an appointment at Y&Y Beauty tomorrow at ${appointmentDetails.time} with ${appointmentDetails.technician}.`,
@@ -50,6 +71,11 @@ const sendAppointmentReminder = async (phoneNumber, appointmentDetails) => {
 };
 
 const sendPromotionalMessage = async (phoneNumber, message) => {
+    if (!client) {
+        console.log('Twilio not configured. Skipping promotional SMS.');
+        return true;
+    }
+
     try {
         await client.messages.create({
             body: message,
@@ -68,4 +94,4 @@ module.exports = {
     sendAppointmentConfirmation,
     sendAppointmentReminder,
     sendPromotionalMessage
-}; 
+};
