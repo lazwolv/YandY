@@ -1,0 +1,321 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  EMPLOYEE
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum FeedbackCategory {
+  SERVICE
+  CLEANLINESS
+  STAFF
+  PRICING
+  OTHER
+}
+
+enum SentimentType {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum NotificationType {
+  SMS
+  EMAIL
+  PUSH
+  IN_APP
+}
+
+enum NotificationChannel {
+  APPOINTMENT
+  PROMOTION
+  REMINDER
+  SOCIAL
+  FEEDBACK
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  username      String   @unique
+  phoneNumber   String   @unique @map("phone_number")
+  passwordHash  String   @map("password_hash")
+  fullName      String   @map("full_name")
+  role          Role     @default(CUSTOMER)
+  points        Int      @default(0)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  appointments      Appointment[]
+  teamMember        TeamMember?
+  refreshTokens     RefreshToken[]
+  workPhotos        WorkPhoto[]
+  photoVotes        PhotoVote[]
+  feedback          Feedback[]
+  smsSubscription   SmsSubscription?
+  notifications     Notification[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model TeamMember {
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  bio         String?
+  bioEs       String?  @map("bio_es")
+  specialty   String
+  specialtyEs String?  @map("specialty_es")
+  isAvailable Boolean  @default(true) @map("is_available")
+  imageUrl    String?  @map("image_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments  Appointment[]
+  availability  Availability[]
+  blockedSlots  BlockedSlot[]
+
+  @@map("team_members")
+}
+
+model Service {
+  id            String   @id @default(uuid())
+  name          String
+  nameEs        String   @map("name_es")
+  description   String?
+  descriptionEs String?  @map("description_es")
+  duration      Int
+  price         Decimal  @db.Decimal(10, 2)
+  isActive      Boolean  @default(true) @map("is_active")
+  category      String?
+  imageUrl      String?  @map("image_url")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  appointments Appointment[]
+
+  @@map("services")
+}
+
+model Appointment {
+  id                 String            @id @default(uuid())
+  userId             String            @map("user_id")
+  teamMemberId       String            @map("team_member_id")
+  serviceId          String            @map("service_id")
+  startTime          DateTime          @map("start_time")
+  endTime            DateTime          @map("end_time")
+  status             AppointmentStatus @default(PENDING)
+  notes              String?
+  cancellationReason String?           @map("cancellation_reason")
+  reminderSent       Boolean           @default(false) @map("reminder_sent")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamMember  TeamMember   @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  service     Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  workPhotos  WorkPhoto[]
+
+  @@index([userId])
+  @@index([teamMemberId])
+  @@index([startTime])
+  @@map("appointments")
+}
+
+model Availability {
+  id           String   @id @default(uuid())
+  teamMemberId String   @map("team_member_id")
+  dayOfWeek    Int      @map("day_of_week")
+  startTime    String   @map("start_time")
+  endTime      String   @map("end_time")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  teamMember TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  @@map("availability")
+}
+
+model BlockedSlot {
+  id           String   @id @default(uuid())
+  teamMemberId String   @map("team_member_id")
+  startTime    DateTime @map("start_time")
+  endTime      DateTime @map("end_time")
+  reason       String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  teamMember TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+
+  @@map("blocked_slots")
+}
+
+model WorkPhoto {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  appointmentId   String?   @map("appointment_id")
+  imageUrl        String    @map("image_url")
+  thumbnailUrl    String?   @map("thumbnail_url")
+  caption         String?
+  isApproved      Boolean   @default(false) @map("is_approved")
+  isFeatured      Boolean   @default(false) @map("is_featured")
+  approvedAt      DateTime? @map("approved_at")
+  approvedBy      String?   @map("approved_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointment Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  votes       PhotoVote[]
+  weeklyPodiumFirst  WeeklyPodium[] @relation("FirstPlace")
+  weeklyPodiumSecond WeeklyPodium[] @relation("SecondPlace")
+  weeklyPodiumThird  WeeklyPodium[] @relation("ThirdPlace")
+
+  @@index([userId])
+  @@index([appointmentId])
+  @@index([isApproved])
+  @@index([isFeatured])
+  @@index([createdAt])
+  @@map("work_photos")
+}
+
+model PhotoVote {
+  id        String   @id @default(uuid())
+  photoId   String   @map("photo_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  photo WorkPhoto @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([photoId, userId])
+  @@index([photoId])
+  @@index([userId])
+  @@map("photo_votes")
+}
+
+model WeeklyPodium {
+  id              String   @id @default(uuid())
+  weekStart       DateTime @map("week_start")
+  weekEnd         DateTime @map("week_end")
+  firstPhotoId    String   @map("first_photo_id")
+  firstVoteCount  Int      @map("first_vote_count")
+  secondPhotoId   String?  @map("second_photo_id")
+  secondVoteCount Int?     @map("second_vote_count")
+  thirdPhotoId    String?  @map("third_photo_id")
+  thirdVoteCount  Int?     @map("third_vote_count")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  firstPhoto  WorkPhoto  @relation("FirstPlace", fields: [firstPhotoId], references: [id], onDelete: Cascade)
+  secondPhoto WorkPhoto? @relation("SecondPlace", fields: [secondPhotoId], references: [id], onDelete: Cascade)
+  thirdPhoto  WorkPhoto? @relation("ThirdPlace", fields: [thirdPhotoId], references: [id], onDelete: Cascade)
+
+  @@index([weekStart])
+  @@map("weekly_podiums")
+}
+
+model Feedback {
+  id                String           @id @default(uuid())
+  userId            String?          @map("user_id")
+  category          FeedbackCategory
+  message           String
+  sentimentType     SentimentType    @map("sentiment_type")
+  sentimentScore    Decimal          @db.Decimal(5, 4) @map("sentiment_score")
+  isAnonymous       Boolean          @default(false) @map("is_anonymous")
+  isResolved        Boolean          @default(false) @map("is_resolved")
+  resolvedAt        DateTime?        @map("resolved_at")
+  resolvedBy        String?          @map("resolved_by")
+  resolutionNotes   String?          @map("resolution_notes")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([category])
+  @@index([sentimentType])
+  @@index([isResolved])
+  @@index([createdAt])
+  @@map("feedback")
+}
+
+model SmsSubscription {
+  id                String    @id @default(uuid())
+  userId            String    @unique @map("user_id")
+  phoneNumber       String    @map("phone_number")
+  isSubscribed      Boolean   @default(true) @map("is_subscribed")
+  subscribedAt      DateTime  @default(now()) @map("subscribed_at")
+  unsubscribedAt    DateTime? @map("unsubscribed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([phoneNumber])
+  @@index([isSubscribed])
+  @@map("sms_subscriptions")
+}
+
+model Notification {
+  id              String             @id @default(uuid())
+  userId          String             @map("user_id")
+  type            NotificationType
+  channel         NotificationChannel
+  title           String
+  message         String
+  status          NotificationStatus @default(PENDING)
+  metadata        Json?
+  sentAt          DateTime?          @map("sent_at")
+  deliveredAt     DateTime?          @map("delivered_at")
+  readAt          DateTime?          @map("read_at")
+  failureReason   String?            @map("failure_reason")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([channel])
+  @@index([status])
+  @@index([createdAt])
+  @@map("notifications")
+}

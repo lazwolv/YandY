@@ -1,10 +1,39 @@
 {
-  "dependencies": {
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "pg": "^8.12.0",
-    "purgecss": "^6.0.0",
-    "sequelize": "^6.37.3"
+  "name": "yy-beauty-salon",
+  "version": "2.0.0",
+  "description": "Y&Y Beauty Salon - Modern booking and management system",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose up",
+    "dev:build": "docker-compose up --build",
+    "dev:down": "docker-compose down",
+    "dev:clean": "docker-compose down -v",
+    "backend:dev": "cd backend && npm run dev",
+    "backend:build": "cd backend && npm run build",
+    "backend:prisma:generate": "cd backend && npm run prisma:generate",
+    "backend:prisma:migrate": "cd backend && npm run prisma:migrate",
+    "backend:prisma:studio": "cd backend && npm run prisma:studio",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "clean": "rm -rf backend/node_modules frontend/node_modules backend/dist frontend/dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/yy-beauty-salon.git"
+  },
+  "keywords": [
+    "beauty-salon",
+    "booking",
+    "react",
+    "typescript",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "Lazaro Martinez",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
