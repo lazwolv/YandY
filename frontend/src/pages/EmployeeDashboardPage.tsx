@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { appointmentsApi, Appointment } from '../api/appointments';
-import { Calendar, Clock, Users, TrendingUp, Settings, Bell, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, Users, TrendingUp, Settings, Bell, CheckCircle, XCircle, AlertCircle, DollarSign } from 'lucide-react';
 
 export const EmployeeDashboardPage = () => {
   const { user, isAuthenticated, loadUser } = useAuthStore();
