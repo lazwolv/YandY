@@ -39,9 +39,7 @@ services:
   # Frontend Service (static site)
   - type: web
     name: yandy-frontend
-    env: static
-    region: oregon
-    plan: free
+    runtime: static
     rootDir: frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
     staticPublishPath: ./dist
