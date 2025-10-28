@@ -69,9 +69,18 @@ function App() {
     };
   }, []);
 
-  // Scroll to top on route change
+  // Scroll to top on route change (instant, not smooth)
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Temporarily disable smooth scrolling for route changes
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+    // Re-enable smooth scrolling after a brief delay
+    const timer = setTimeout(() => {
+      document.documentElement.style.scrollBehavior = 'smooth';
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [location.pathname]);
 
   return (

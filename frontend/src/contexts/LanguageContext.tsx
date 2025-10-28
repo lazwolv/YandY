@@ -45,7 +45,7 @@ const translations: Record<Language, Translations> = {
     'dashboard.employee.subtitle': 'Welcome',
 
     // Common
-    'common.phone': '(555) 123-4567',
+    'common.phone': '(702) 234-5489',
     'common.luxuryNailCare': 'Luxury Nail Care',
   },
   ES: {
@@ -78,7 +78,7 @@ const translations: Record<Language, Translations> = {
     'dashboard.employee.subtitle': 'Bienvenido',
 
     // Common
-    'common.phone': '(555) 123-4567',
+    'common.phone': '(702) 234-5489',
     'common.luxuryNailCare': 'Cuidado de Uñas de Lujo',
   },
 };

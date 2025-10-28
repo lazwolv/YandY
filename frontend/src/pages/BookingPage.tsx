@@ -21,6 +21,11 @@ export const BookingPage = () => {
     notes: '',
   });
 
+  // Ensure page scrolls to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
