@@ -16,8 +16,8 @@ export const createRateLimiter = (windowMs: number = 15 * 60 * 1000, max: number
     standardHeaders: true,
     legacyHeaders: false,
     skip: (_req: Request) => {
-      // Skip rate limiting in test environment
-      return config.NODE_ENV === 'test';
+      // Skip rate limiting in test and development environments
+      return config.NODE_ENV === 'test' || config.NODE_ENV === 'development';
     },
   });
 };

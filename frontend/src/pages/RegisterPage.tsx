@@ -33,9 +33,25 @@ export const RegisterPage = () => {
       return;
     }
 
-    // Validate password strength
+    // Validate password strength (must match backend requirements)
     if (formData.password.length < 8) {
       setValidationError('Password must be at least 8 characters long');
+      return;
+    }
+    if (!/[a-z]/.test(formData.password)) {
+      setValidationError('Password must contain at least one lowercase letter');
+      return;
+    }
+    if (!/[A-Z]/.test(formData.password)) {
+      setValidationError('Password must contain at least one uppercase letter');
+      return;
+    }
+    if (!/[0-9]/.test(formData.password)) {
+      setValidationError('Password must contain at least one number');
+      return;
+    }
+    if (!/[^a-zA-Z0-9]/.test(formData.password)) {
+      setValidationError('Password must contain at least one special character (!@#$%^&*)');
       return;
     }
 
@@ -172,6 +188,9 @@ export const RegisterPage = () => {
                   disabled={isLoading}
                 />
               </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Password must have: 8+ characters, uppercase, lowercase, number, and special character
+              </p>
             </div>
 
             <div>
