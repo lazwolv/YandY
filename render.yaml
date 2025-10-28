@@ -36,10 +36,9 @@ services:
       - key: PORT
         value: 8000
 
-  # Frontend Service (if needed)
-  - type: web
+  # Frontend Service (static site)
+  - type: static
     name: yandy-frontend
-    runtime: node
     region: oregon
     plan: free
     rootDir: frontend
@@ -56,6 +55,7 @@ services:
     plan: free
     region: oregon
     maxmemoryPolicy: allkeys-lru
+    ipAllowList: []
 
 # Database
 databases:
