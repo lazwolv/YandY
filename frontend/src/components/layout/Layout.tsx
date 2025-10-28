@@ -1,7 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Globe, LogOut, Sparkles, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { Sparkles, LogOut, User, Globe } from 'lucide-react';
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const { t, i18n } = useTranslation();
@@ -76,7 +76,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
               <button
                 onClick={toggleLanguage}
                 className="flex items-center space-x-1 text-gray-700 hover:text-primary-600"
-                title={i18n.language === 'en' ? 'Español' : 'English'}
+                title={i18n.language === 'es' ? 'Español' : 'English'}
               >
                 <Globe className="w-4 h-4" />
                 <span className="uppercase text-sm font-medium">{i18n.language}</span>
@@ -116,9 +116,9 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             <div>
               <h3 className="text-lg font-semibold mb-4">{t('common.contact')}</h3>
               <ul className="space-y-2 text-gray-400">
-                <li>+1 (555) 123-4567</li>
-                <li>info@yysalon.com</li>
-                <li>123 Beauty Street</li>
+                <li>+1 (702) 234-5489</li>
+                <li>beautysalonyy2019@gmail.com</li>
+                <li>1820 S Rainbow Blvd</li>
               </ul>
             </div>
           </div>

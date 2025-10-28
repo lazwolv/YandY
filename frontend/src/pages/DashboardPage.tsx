@@ -8,6 +8,11 @@ export const DashboardPage = () => {
   const { user, isAuthenticated, loadUser } = useAuthStore();
   const navigate = useNavigate();
 
+  // Ensure page scrolls to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');

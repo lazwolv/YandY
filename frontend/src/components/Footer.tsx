@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, Heart, ExternalLink } from 'lucide-react';
+import { env } from '../config/env';
+import { openMaps } from '../utils/maps';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: Facebook, label: 'Facebook', href: '#' },
-    { icon: Instagram, label: 'Instagram', href: '#' },
-    { icon: Twitter, label: 'Twitter', href: '#' },
+    { icon: Facebook, label: 'Facebook', href: env.social.facebook },
+    { icon: Instagram, label: 'Instagram', href: env.social.instagram },
+    // { icon: Twitter, label: 'Twitter', href: '#' },
   ];
 
   const quickLinks = [
@@ -126,7 +128,7 @@ const Footer = () => {
             <h4 className="text-xl font-bold text-white mb-6">Get In Touch</h4>
             <div className="space-y-4">
               <a
-                href="tel:+15551234567"
+                href={`tel:${env.business.phone}`}
                 className="flex items-start gap-3 text-white/80 hover:text-pink-light transition-colors group"
               >
                 <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 group-hover:bg-pink-light/20 transition-colors">
@@ -134,12 +136,12 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="text-sm text-white/60">Call Us</div>
-                  <div className="font-semibold">(555) 123-4567</div>
+                  <div className="font-semibold">{env.business.phoneDisplay}</div>
                 </div>
               </a>
 
               <a
-                href="mailto:info@yysalon.com"
+                href={`mailto:${env.business.email}`}
                 className="flex items-start gap-3 text-white/80 hover:text-pink-light transition-colors group"
               >
                 <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 group-hover:bg-pink-light/20 transition-colors">
@@ -147,23 +149,30 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="text-sm text-white/60">Email Us</div>
-                  <div className="font-semibold">info@yysalon.com</div>
+                  <div className="font-semibold">{env.business.email}</div>
                 </div>
               </a>
 
-              <div className="flex items-start gap-3 text-white/80">
-                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+              <button
+                onClick={() => openMaps({
+                  address: env.business.address.full,
+                  latitude: env.business.location.latitude,
+                  longitude: env.business.location.longitude,
+                })}
+                className="flex items-start gap-3 text-white/80 hover:text-pink-light transition-colors group cursor-pointer text-left"
+              >
+                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0 group-hover:bg-pink-light/20 transition-colors">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="text-sm text-white/60">Visit Us</div>
                   <div className="font-semibold">
-                    123 Beauty Street
+                    {env.business.address.line1}
                     <br />
-                    Salon City, SC 12345
+                    {env.business.address.city}, {env.business.address.state}, {env.business.address.zip}
                   </div>
                 </div>
-              </div>
+              </button>
             </div>
           </motion.div>
         </div>
@@ -183,17 +192,23 @@ const Footer = () => {
             <p className="text-white/90 mb-6">
               Subscribe to our newsletter for exclusive deals and beauty tips
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="px-6 py-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink flex-1 max-w-md"
-              />
-              <button className="px-8 py-4 bg-gradient-to-r from-pink to-pink-light text-purple-dark font-bold rounded-full hover:from-pink-light hover:to-pink transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
-                Subscribe
-                <ExternalLink className="w-5 h-5" />
-              </button>
-            </div>
+            {env.features.newsletter ? (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="px-6 py-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink flex-1 max-w-md"
+                />
+                <button className="px-8 py-4 bg-gradient-to-r from-pink to-pink-light text-purple-dark font-bold rounded-full hover:from-pink-light hover:to-pink transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                  Subscribe
+                  <ExternalLink className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-white/70 italic">Newsletter coming soon!</p>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -208,7 +223,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-white/60 text-sm">
             <p className="flex items-center gap-2">
               &copy; {currentYear} Y&Y Beauty Salon. All rights reserved. Made with{' '}
-              <Heart className="w-4 h-4 fill-pink text-pink" /> in Salon City
+              <Heart className="w-4 h-4 fill-pink text-pink" /> in Las Vegas
             </p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-pink transition-colors">

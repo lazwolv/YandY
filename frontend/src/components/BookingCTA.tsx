@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import { Calendar, Phone, MessageCircle, MapPin, Clock, Sparkles } from 'lucide-react';
 import FloatingElements from './3D/FloatingElements';
+import { env } from '../config/env';
+import { openMaps } from '../utils/maps';
 
 const BookingCTA = () => {
   const navigate = useNavigate();
@@ -22,14 +24,16 @@ const BookingCTA = () => {
       action: 'Book Now',
       color: 'from-pink to-pink-light',
       onClick: () => navigate('/booking'),
+      enabled: env.features.booking,
     },
     {
       icon: Phone,
       title: 'Call Us',
-      description: '(555) 123-4567',
+      description: env.business.phoneDisplay,
       action: 'Call Now',
       color: 'from-pink to-pink-light',
-      onClick: () => window.location.href = 'tel:+15551234567',
+      onClick: () => window.location.href = `tel:${env.business.phone}`,
+      enabled: true,
     },
     {
       icon: MessageCircle,
@@ -37,14 +41,13 @@ const BookingCTA = () => {
       description: 'Quick response via SMS',
       action: 'Send Message',
       color: 'from-pink to-pink-light',
-      onClick: () => window.location.href = 'sms:+15551234567',
+      onClick: () => window.location.href = `sms:${env.business.phone}`,
+      enabled: true,
     },
-  ];
+  ].filter(method => method.enabled);
 
   const hours = [
-    { day: 'Monday - Friday', time: '9:00 AM - 7:00 PM' },
-    { day: 'Saturday', time: '9:00 AM - 6:00 PM' },
-    { day: 'Sunday', time: '10:00 AM - 5:00 PM' },
+    { day: 'Monday - Friday', time: env.hours.weekday },
   ];
 
   return (
@@ -208,12 +211,19 @@ const BookingCTA = () => {
               </div>
               <div className="space-y-4">
                 <p className="text-white/90 text-lg">
-                  123 Beauty Street
+                  {env.business.address.line1}
                   <br />
-                  Salon City, SC 12345
+                  {env.business.address.city}, {env.business.address.state} {env.business.address.zip}
                 </p>
                 <div className="flex flex-col gap-3 pt-4">
-                  <button className="bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 border border-white/30">
+                  <button
+                    onClick={() => openMaps({
+                      address: env.business.address.full,
+                      latitude: env.business.location.latitude,
+                      longitude: env.business.location.longitude,
+                    })}
+                    className="bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 border border-white/30 text-center"
+                  >
                     Get Directions
                   </button>
                   <p className="text-white/80 text-sm text-center">
@@ -244,7 +254,7 @@ const BookingCTA = () => {
           <div className="w-px h-6 bg-white/30" />
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-pink" />
-            <span className="font-semibold">Gift Cards Available</span>
+            <span className="font-semibold">Gift Vouchers Available</span>
           </div>
         </motion.div>
       </div>
