@@ -32,7 +32,7 @@ services:
       - key: JWT_REFRESH_EXPIRY
         value: 7d
       - key: FRONTEND_URL
-        value: https://yandybeautysalon.com
+        value: https://yandybeautysalon.com,https://www.yandybeautysalon.com,https://yandy-frontend.onrender.com
       - key: PORT
         value: 8000
 
