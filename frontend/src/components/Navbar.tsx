@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Calendar, Phone, Globe, User, LogOut, LayoutDashboard, LogIn } from 'lucide-react';
+import { Menu, X, Calendar, Globe, LogOut, LayoutDashboard, LogIn } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useLanguage } from '../contexts/LanguageContext';
 

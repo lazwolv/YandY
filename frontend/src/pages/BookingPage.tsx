@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, Phone, MessageSquare, Check, X } from 'lucide-react';
+import { Calendar, Clock, User, Phone, MessageSquare, Check } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { servicesApi, Service } from '../api/services';
 import { appointmentsApi } from '../api/appointments';

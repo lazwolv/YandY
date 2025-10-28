@@ -48,17 +48,16 @@ services:
         source: /*
         destination: /index.html
 
+  # Redis
+  - type: redis
+    name: yandy-redis
+    plan: free
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+
 # Database
 databases:
   - name: yandy-production-database
     databaseName: yybeautysalon
     plan: free
     region: oregon
-
-# Redis
-services:
-  - type: redis
-    name: yandy-redis
-    plan: free
-    region: oregon
-    maxmemoryPolicy: allkeys-lru
