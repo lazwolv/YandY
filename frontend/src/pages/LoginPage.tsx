@@ -25,7 +25,7 @@ export const LoginPage = () => {
     try {
       // Convert phone number to username (last 10 digits)
       const username = formData.phoneNumber.replace(/\D/g, '').slice(-10);
-      await login({ username, password: formData.password });
+      await login({ emailOrUsername: username, password: formData.password });
       navigate('/dashboard');
     } catch (error) {
       // Error is handled by the store

@@ -1,3 +1,4 @@
+import 'express-async-errors'; // Must be imported before express routes
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';

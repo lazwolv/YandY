@@ -5,7 +5,7 @@ services:
     container_name: yy-salon-db
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ./backend/.env.local
     environment:
       POSTGRES_DB: ${DB_NAME:-yy_beauty_salon}
       POSTGRES_USER: ${DB_USER:-salon_admin}
@@ -14,7 +14,6 @@ services:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - yy-salon-network
     healthcheck:
@@ -29,7 +28,7 @@ services:
     container_name: yy-salon-redis
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ./backend/.env.local
     command: redis-server --requirepass ${REDIS_PASSWORD:-RedisPassword123!}
     ports:
       - "${REDIS_PORT:-6379}:6379"
@@ -51,7 +50,7 @@ services:
     container_name: yy-salon-api
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ./backend/.env.local
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://salon_admin:SecurePassword123!@postgres:5432/yy_beauty_salon
@@ -83,7 +82,7 @@ services:
     container_name: yy-salon-frontend
     restart: unless-stopped
     env_file:
-      - ./frontend/.env
+      - ./frontend/.env.local
     environment:
       VITE_API_URL: http://localhost:8000
     ports:
