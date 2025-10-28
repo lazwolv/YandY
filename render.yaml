@@ -37,8 +37,9 @@ services:
         value: 8000
 
   # Frontend Service (static site)
-  - type: static
+  - type: web
     name: yandy-frontend
+    env: static
     region: oregon
     plan: free
     rootDir: frontend
