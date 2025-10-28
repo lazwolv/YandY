@@ -48,9 +48,17 @@ app.use(preventParamPollution);
 // Global rate limiting for API routes
 app.use('/api', apiRateLimiter);
 
+// Health check endpoint (direct, not through routes)
+app.get('/health', (_req, res) => {
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 // Routes
 app.use('/api', routes);
-app.use('/health', routes);
 
 // Error handling
 app.use(notFoundHandler);

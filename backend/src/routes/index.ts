@@ -11,15 +11,6 @@ router.use('/availability', availabilityRoutes);
 router.use('/appointments', appointmentRoutes);
 router.use('/services', serviceRoutes);
 
-// Health check endpoint
-router.get('/health', (_req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
-});
-
 // API info endpoint
 router.get('/', (_req, res) => {
   res.json({
