@@ -81,7 +81,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   loadUser: async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      set({ isAuthenticated: false });
+      set({ isAuthenticated: false, isLoading: false });
+      return;
+    }
+
+    // Prevent multiple concurrent calls
+    const currentState = useAuthStore.getState();
+    if (currentState.isLoading) {
       return;
     }
 

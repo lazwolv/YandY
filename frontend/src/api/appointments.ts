@@ -11,7 +11,7 @@ export interface Appointment {
   notes?: string;
   reminderSent: boolean;
   createdAt: string;
-  user: {
+  user?: {
     id: string;
     fullName: string;
     phoneNumber: string;
@@ -22,12 +22,19 @@ export interface Appointment {
     duration: number;
     price: number;
   };
+  teamMember?: {
+    id: string;
+    user: {
+      fullName: string;
+      username: string;
+    };
+  };
 }
 
 export const appointmentsApi = {
   // Get all appointments for the current user (customer or employee)
   getMyAppointments: async (upcoming = false): Promise<{ appointments: Appointment[] }> => {
-    const response = await apiClient.get('/appointments', {
+    const response = await apiClient.get('/appointments/my-appointments', {
       params: { upcoming: upcoming ? 'true' : 'false' },
     });
     return response.data;
@@ -67,6 +74,31 @@ export const appointmentsApi = {
     const response = await apiClient.delete(`/appointments/${id}`, {
       data: { cancellationReason: reason },
     });
+    return response.data;
+  },
+
+  // Employee-specific: Get employee appointments
+  getEmployeeAppointments: async (date?: string, upcoming?: boolean): Promise<{ appointments: Appointment[] }> => {
+    const params: any = {};
+    if (date) params.date = date;
+    if (upcoming) params.upcoming = 'true';
+    const response = await apiClient.get('/appointments/employee/appointments', { params });
+    return response.data;
+  },
+
+  // Employee-specific: Get employee dashboard data
+  getEmployeeDashboard: async (): Promise<{
+    teamMember: any;
+    stats: {
+      todayCount: number;
+      upcomingCount: number;
+      totalCompleted: number;
+      thisMonthCompleted: number;
+    };
+    todayAppointments: Appointment[];
+    upcomingAppointments: Appointment[];
+  }> => {
+    const response = await apiClient.get('/appointments/employee/dashboard');
     return response.data;
   },
 };

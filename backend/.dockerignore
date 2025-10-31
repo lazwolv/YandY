@@ -1,0 +1,54 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Development files
+.env
+.env.local
+.env.*.local
+.env.test
+*.dev
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git
+.gitignore
+
+# Testing
+coverage
+.nyc_output
+*.test.ts
+*.spec.ts
+__tests__
+test
+
+# Documentation
+*.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Build artifacts (will be built in container) - but keep in dev
+# dist
+# build
+
+# Logs
+logs
+*.log
+
+# Prisma
+prisma/migrations
+
+# Misc
+.dockerignore
+Dockerfile*
+docker-compose*.yml

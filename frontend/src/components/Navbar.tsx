@@ -27,9 +27,13 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Load user data on app initialization if we have a token but no user
   useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+    const token = localStorage.getItem('accessToken');
+    if (token && !user) {
+      loadUser();
+    }
+  }, []);
 
   const handleLogout = async () => {
     await logout();

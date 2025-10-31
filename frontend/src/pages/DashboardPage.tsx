@@ -1,26 +1,18 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { CustomerDashboardPage } from './CustomerDashboardPage';
 import { EmployeeDashboardPage } from './EmployeeDashboardPage';
 
 export const DashboardPage = () => {
-  const { user, isAuthenticated, loadUser } = useAuthStore();
-  const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   // Ensure page scrolls to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, []);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    loadUser();
-  }, [isAuthenticated, navigate, loadUser]);
-
+  // ProtectedRoute handles authentication and loading user data
+  // If we don't have user yet, ProtectedRoute is still loading
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">

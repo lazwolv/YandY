@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { X, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const GalleryNew = () => {
+  const { t } = useLanguage();
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -44,9 +46,9 @@ const GalleryNew = () => {
   };
 
   const categories = [
-    { id: 'all', label: 'All Work' },
-    { id: 'nails', label: 'Nail Art' },
-    { id: 'salon', label: 'Our Salon' },
+    { id: 'all', label: t('gallery.filter.allWork') },
+    { id: 'nails', label: t('gallery.filter.nailArt') },
+    { id: 'salon', label: t('gallery.filter.ourSalon') },
   ];
 
   return (
@@ -61,13 +63,13 @@ const GalleryNew = () => {
         >
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-2 mb-6">
             <Camera className="w-4 h-4 text-pink-light" />
-            <span className="text-white font-semibold">Portfolio</span>
+            <span className="text-white font-semibold">{t('gallery.portfolio')}</span>
           </div>
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            Our Beautiful Work
+            {t('gallery.beautifulWork')}
           </h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            Discover stunning nail art and our luxurious salon environment
+            {t('gallery.subtitle2')}
           </p>
         </motion.div>
 
@@ -134,7 +136,7 @@ const GalleryNew = () => {
           className="text-center mt-12"
         >
           <button className="bg-gradient-to-r from-pink to-pink-light text-purple-dark font-bold px-10 py-4 rounded-full shadow-xl hover:shadow-2xl hover:from-pink-light hover:to-pink transition-all duration-300 transform hover:scale-105">
-            View Full Portfolio on Instagram
+            {t('gallery.viewInstagram')}
           </button>
         </motion.div>
       </div>

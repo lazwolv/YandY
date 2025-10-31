@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { useAuthStore } from './store/authStore';
 import Navbar from './components/Navbar';
 import HeroNew from './components/HeroNew';
 import ServicesNew from './components/ServicesNew';
@@ -16,6 +17,7 @@ import { BookingPage } from './pages/BookingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { PhotoUploadPage } from './pages/PhotoUploadPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Home page component with all sections
 const Home = () => {
@@ -59,6 +61,15 @@ const Home = () => {
 
 function App() {
   const location = useLocation();
+  const { loadUser } = useAuthStore();
+
+  // Initialize auth on app mount if token exists
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      loadUser();
+    }
+  }, [loadUser]);
 
   useEffect(() => {
     // Add smooth scroll behavior
@@ -84,46 +95,48 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <LanguageProvider>
-      <div className="min-h-screen bg-white">
-        {/* Navigation */}
-        <Navbar />
+    <ErrorBoundary>
+      <LanguageProvider>
+        <div className="min-h-screen bg-white">
+          {/* Navigation */}
+          <Navbar />
 
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route
-            path="/booking"
-            element={
-              <ProtectedRoute>
-                <BookingPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/upload-photo"
-            element={
-              <ProtectedRoute>
-                <PhotoUploadPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+          {/* Routes */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/booking"
+              element={
+                <ProtectedRoute>
+                  <BookingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/upload-photo"
+              element={
+                <ProtectedRoute>
+                  <PhotoUploadPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
 
-        {/* Footer */}
-        <Footer />
-      </div>
-    </LanguageProvider>
+          {/* Footer */}
+          <Footer />
+        </div>
+      </LanguageProvider>
+    </ErrorBoundary>
   );
 }
 

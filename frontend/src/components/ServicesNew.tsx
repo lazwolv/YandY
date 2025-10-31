@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Sparkles, Hand, Droplet, Heart, Scissors, Palette, Star, Clock } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const ServicesNew = () => {
+  const { t } = useLanguage();
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -11,51 +13,51 @@ const ServicesNew = () => {
   const services = [
     {
       icon: Sparkles,
-      title: 'Luxury Manicure',
-      description: 'Premium nail care with gel polish, nail art, and hand massage',
-      features: ['Gel Polish', 'Nail Art', 'Hand Massage'],
+      title: t('services.luxuryManicure'),
+      description: t('services.luxuryManicure.desc'),
+      features: [t('services.gelPolish'), t('services.nailArtFeature'), t('services.handMassage')],
       color: 'from-purple-light to-pink',
-      price: 'From $35',
+      price: `${t('services.from')} $35`,
     },
     {
       icon: Hand,
-      title: 'Deluxe Pedicure',
-      description: 'Rejuvenating foot treatment with exfoliation and massage',
-      features: ['Foot Soak', 'Exfoliation', 'Massage'],
+      title: t('services.deluxePedicure'),
+      description: t('services.deluxePedicure.desc'),
+      features: [t('services.footSoak'), t('services.exfoliation'), t('services.massage')],
       color: 'from-purple-light to-pink',
-      price: 'From $45',
+      price: `${t('services.from')} $45`,
     },
     {
       icon: Palette,
-      title: 'Nail Art Design',
-      description: 'Custom designs from elegant to bold, crafted by expert artists',
-      features: ['Custom Designs', '3D Art', 'Ombre'],
+      title: t('services.nailArt'),
+      description: t('services.nailArt.desc'),
+      features: [t('services.customDesigns'), t('services.3dArt'), t('services.ombre')],
       color: 'from-purple-light to-pink',
-      price: 'From $15',
+      price: `${t('services.from')} $15`,
     },
     {
       icon: Droplet,
-      title: 'Acrylic & Gel',
-      description: 'Long-lasting extensions with natural look and strength',
-      features: ['Extensions', 'Refills', 'Sculpting'],
+      title: t('services.acrylicGel'),
+      description: t('services.acrylicGel.desc'),
+      features: [t('services.extensions'), t('services.refills'), t('services.sculpting')],
       color: 'from-purple-light to-pink',
-      price: 'From $50',
+      price: `${t('services.from')} $50`,
     },
     {
       icon: Scissors,
-      title: 'Waxing Services',
-      description: 'Professional hair removal for smooth, beautiful skin',
-      features: ['Body Wax', 'Facial Wax', 'Gentle Care'],
+      title: t('services.waxing'),
+      description: t('services.waxing.desc'),
+      features: [t('services.bodyWax'), t('services.facialWax'), t('services.gentleCare')],
       color: 'from-purple-light to-pink',
-      price: 'From $20',
+      price: `${t('services.from')} $20`,
     },
     {
       icon: Heart,
-      title: 'Spa Packages',
-      description: 'Complete beauty experience with combined treatments',
-      features: ['Full Service', 'Relaxation', 'VIP Treatment'],
+      title: t('services.spaPackages'),
+      description: t('services.spaPackages.desc'),
+      features: [t('services.fullService'), t('services.relaxation'), t('services.vipTreatment')],
       color: 'from-purple-light to-pink',
-      price: 'From $80',
+      price: `${t('services.from')} $80`,
     },
   ];
 
@@ -96,13 +98,13 @@ const ServicesNew = () => {
         >
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-2 mb-6">
             <Star className="w-4 h-4 text-pink-light" />
-            <span className="text-white font-semibold">Our Services</span>
+            <span className="text-white font-semibold">{t('services.badge')}</span>
           </div>
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            Luxury Beauty Treatments
+            {t('services.title')}
           </h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            From classic elegance to bold statements, our expert team delivers perfection in every detail
+            {t('services.subtitle')}
           </p>
         </motion.div>
 
@@ -152,10 +154,10 @@ const ServicesNew = () => {
                   {/* Price and CTA */}
                   <div className="flex items-center justify-between pt-4 border-t border-white/10">
                     <span className="text-xl font-bold text-pink-light">
-                      {service.price}
+                      ${Number(service.price).toFixed(2)}
                     </span>
                     <button className="text-pink-light font-semibold hover:text-pink transition-colors flex items-center gap-1 group">
-                      Learn More
+                      {t('services.learnMore')}
                       <motion.span
                         animate={{ x: [0, 4, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
@@ -179,10 +181,10 @@ const ServicesNew = () => {
         >
           <p className="text-white/90 mb-6 flex items-center justify-center gap-2">
             <Clock className="w-5 h-5" />
-            Walk-ins welcome • Appointments recommended
+            {t('services.walkInsWelcome')}
           </p>
           <button className="bg-gradient-to-r from-purple-light to-pink text-white font-bold px-10 py-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-            View Full Service Menu
+            {t('services.viewFullMenu')}
           </button>
         </motion.div>
       </div>

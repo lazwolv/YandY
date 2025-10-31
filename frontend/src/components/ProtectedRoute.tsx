@@ -7,20 +7,21 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading, loadUser } = useAuthStore();
+  const { isAuthenticated, isLoading, loadUser, user } = useAuthStore();
   const location = useLocation();
+  const hasToken = !!localStorage.getItem('accessToken');
 
   useEffect(() => {
-    // Only load user once on mount if there's a token
+    // Only load user if we have a token but no user data AND not already loading
     const token = localStorage.getItem('accessToken');
-    if (token && !isAuthenticated) {
+    if (token && !user && !isLoading) {
       loadUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Show loading state while checking authentication
-  if (isLoading) {
+  // Show loading while token exists but user data not yet loaded (prevents race condition)
+  if (isLoading || (hasToken && !user)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -31,8 +32,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  if (!isAuthenticated) {
-    // Redirect to login and save the location they were trying to access
+  // Only redirect if no token and not authenticated
+  if (!isAuthenticated && !hasToken) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

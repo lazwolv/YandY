@@ -1,5 +1,5 @@
+import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
-import { Request, Response, NextFunction } from 'express';
 
 /**
  * Phone number validation schema
@@ -77,16 +77,30 @@ export const registerSchema = z.object({
 
 /**
  * Login validation schema
+ * Accepts emailOrUsername, username, or phoneNumber
  */
 export const loginSchema = z.object({
-  body: z.object({
-    emailOrUsername: z
-      .string()
-      .min(3, 'Email or username is required')
-      .max(255, 'Email or username is too long')
-      .trim(),
-    password: z.string().min(1, 'Password is required'),
-  }),
+  body: z
+    .object({
+      emailOrUsername: z
+        .string()
+        .min(3, 'Email or username is required')
+        .max(255, 'Email or username is too long')
+        .trim()
+        .optional(),
+      username: z
+        .string()
+        .min(3, 'Username is required')
+        .max(255, 'Username is too long')
+        .trim()
+        .optional(),
+      phoneNumber: phoneNumberSchema.optional(),
+      password: z.string().min(1, 'Password is required'),
+    })
+    .refine(
+      (data) => data.emailOrUsername || data.username || data.phoneNumber,
+      { message: 'Either email, username, or phone number must be provided' }
+    ),
 });
 
 /**
