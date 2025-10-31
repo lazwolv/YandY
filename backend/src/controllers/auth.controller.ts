@@ -228,6 +228,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
         fullName: true,
         role: true,
         points: true,
+        languagePreference: true,
         createdAt: true,
         teamMember: {
           select: {
@@ -248,5 +249,39 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError('Failed to fetch profile', 500);
+  }
+};
+
+export const updateLanguagePreference = async (req: AuthRequest, res: Response) => {
+  try {
+    const { languagePreference } = req.body;
+
+    if (!languagePreference || !['en', 'es'].includes(languagePreference)) {
+      throw new AppError('Invalid language preference. Must be "en" or "es"', 400);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { languagePreference },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        phoneNumber: true,
+        fullName: true,
+        role: true,
+        points: true,
+        languagePreference: true,
+        createdAt: true,
+      },
+    });
+
+    res.json({
+      message: 'Language preference updated successfully',
+      user: updatedUser,
+    });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError('Failed to update language preference', 500);
   }
 };

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { Calendar, Clock, Star, User, Award, Image, Edit, X } from 'lucide-react';
+import { Calendar, Clock, Star, User, Award, Image, Edit, X, Globe } from 'lucide-react';
 import { appointmentsApi, Appointment } from '../api/appointments';
+import { authApi } from '../api/auth';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const CustomerDashboardPage = () => {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
+  const { changeLanguage, language } = useLanguage();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,6 +83,21 @@ export const CustomerDashboardPage = () => {
     }
   };
 
+  const handleLanguageChange = async (newLanguage: string) => {
+    try {
+      // Update in database
+      const response = await authApi.updateLanguagePreference(newLanguage);
+
+      // Update local state
+      setUser(response.user);
+
+      // Change i18n language
+      changeLanguage(newLanguage);
+    } catch (error) {
+      console.error('Failed to update language preference:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple/5 via-white to-pink/5 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,7 +105,21 @@ export const CustomerDashboardPage = () => {
         <div className="mb-8 bg-gradient-to-r from-purple to-purple-dark rounded-2xl shadow-2xl p-8 text-white">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-4">Welcome back, {firstName}! 👋</h1>
+              <div className="flex items-start justify-between mb-4">
+                <h1 className="text-4xl font-bold">Welcome back, {firstName}! 👋</h1>
+                {/* Language Selector */}
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
+                  <Globe className="h-4 w-4" />
+                  <select
+                    value={language}
+                    onChange={(e) => handleLanguageChange(e.target.value)}
+                    className="bg-transparent border-none outline-none cursor-pointer text-sm font-medium"
+                  >
+                    <option value="en" className="text-gray-900">English</option>
+                    <option value="es" className="text-gray-900">Español</option>
+                  </select>
+                </div>
+              </div>
               <p className="text-white/90 text-lg mb-4">Manage your appointments, photos, and rewards</p>
               <div className="flex flex-wrap gap-4 text-sm">
                 <div className="flex items-center gap-2">
