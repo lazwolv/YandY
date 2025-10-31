@@ -66,13 +66,22 @@ export const appointmentsApi = {
     return response.data;
   },
 
+  // Reschedule appointment
+  rescheduleAppointment: async (
+    id: string,
+    startTime: string
+  ): Promise<{ message: string; appointment: Appointment }> => {
+    const response = await apiClient.patch(`/appointments/${id}/reschedule`, { startTime });
+    return response.data;
+  },
+
   // Cancel appointment
   cancelAppointment: async (
     id: string,
     reason?: string
-  ): Promise<{ message: string }> => {
-    const response = await apiClient.delete(`/appointments/${id}`, {
-      data: { cancellationReason: reason },
+  ): Promise<{ message: string; appointment: Appointment }> => {
+    const response = await apiClient.patch(`/appointments/${id}/cancel`, {
+      cancellationReason: reason,
     });
     return response.data;
   },

@@ -495,3 +495,236 @@ export const getEmployeeDashboard = async (req: AuthRequest, res: Response) => {
     throw error;
   }
 };
+
+// Reschedule an appointment
+export const rescheduleAppointment = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { startTime } = req.body;
+    const userId = req.user?.userId;
+    const userRole = req.user?.role;
+
+    if (!startTime) {
+      throw new AppError('New start time is required', 400);
+    }
+
+    const newStartTime = new Date(startTime);
+
+    // Use transaction to prevent race conditions
+    const updatedAppointment = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        // Fetch the existing appointment
+        const existingAppointment = await tx.appointment.findUnique({
+          where: { id },
+          include: { service: true },
+        });
+
+        if (!existingAppointment) {
+          throw new AppError('Appointment not found', 404);
+        }
+
+        // Authorization check: only the customer who owns it or admin/employee can reschedule
+        if (userRole === 'CUSTOMER' && existingAppointment.userId !== userId) {
+          throw new AppError('Not authorized to reschedule this appointment', 403);
+        }
+
+        // Cannot reschedule completed or cancelled appointments
+        if (existingAppointment.status === 'COMPLETED' || existingAppointment.status === 'CANCELLED') {
+          throw new AppError('Cannot reschedule completed or cancelled appointments', 400);
+        }
+
+        // Calculate new end time based on service duration
+        const newEndTime = new Date(newStartTime.getTime() + existingAppointment.service.duration * 60000);
+
+        // Check for conflicts with other appointments
+        const conflictingAppointments = await tx.appointment.findMany({
+          where: {
+            id: { not: id }, // Exclude the current appointment
+            teamMemberId: existingAppointment.teamMemberId,
+            status: {
+              notIn: ['CANCELLED', 'NO_SHOW']
+            },
+            OR: [
+              {
+                AND: [
+                  { startTime: { lte: newStartTime } },
+                  { endTime: { gt: newStartTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { lt: newEndTime } },
+                  { endTime: { gte: newEndTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { gte: newStartTime } },
+                  { endTime: { lte: newEndTime } }
+                ]
+              }
+            ]
+          },
+          select: { id: true }
+        });
+
+        if (conflictingAppointments.length > 0) {
+          throw new AppError('This time slot is not available', 409);
+        }
+
+        // Check for blocked slots
+        const blockedSlots = await tx.blockedSlot.findMany({
+          where: {
+            teamMemberId: existingAppointment.teamMemberId,
+            OR: [
+              {
+                AND: [
+                  { startTime: { lte: newStartTime } },
+                  { endTime: { gt: newStartTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { lt: newEndTime } },
+                  { endTime: { gte: newEndTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { gte: newStartTime } },
+                  { endTime: { lte: newEndTime } }
+                ]
+              }
+            ]
+          },
+          select: { id: true }
+        });
+
+        if (blockedSlots.length > 0) {
+          throw new AppError('This time slot is blocked and not available', 409);
+        }
+
+        // Update the appointment
+        const updated = await tx.appointment.update({
+          where: { id },
+          data: {
+            startTime: newStartTime,
+            endTime: newEndTime,
+            status: 'PENDING', // Reset to pending after rescheduling
+          },
+          include: {
+            service: true,
+            teamMember: {
+              include: {
+                user: {
+                  select: {
+                    fullName: true,
+                    username: true,
+                  },
+                },
+              },
+            },
+            user: {
+              select: {
+                fullName: true,
+                email: true,
+                phoneNumber: true,
+              },
+            },
+          },
+        });
+
+        return updated;
+      },
+      {
+        isolationLevel: 'Serializable',
+        timeout: 10000,
+      }
+    );
+
+    res.json({
+      message: 'Appointment rescheduled successfully',
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Cancel an appointment
+export const cancelAppointment = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { cancellationReason } = req.body;
+    const userId = req.user?.userId;
+    const userRole = req.user?.role;
+
+    // Fetch the appointment
+    const existingAppointment = await prisma.appointment.findUnique({
+      where: { id },
+      include: {
+        service: true,
+        teamMember: {
+          include: {
+            user: true,
+          },
+        },
+        user: true,
+      },
+    });
+
+    if (!existingAppointment) {
+      throw new AppError('Appointment not found', 404);
+    }
+
+    // Authorization check: only the customer who owns it or admin/employee can cancel
+    if (userRole === 'CUSTOMER' && existingAppointment.userId !== userId) {
+      throw new AppError('Not authorized to cancel this appointment', 403);
+    }
+
+    // Cannot cancel already completed or cancelled appointments
+    if (existingAppointment.status === 'COMPLETED') {
+      throw new AppError('Cannot cancel completed appointments', 400);
+    }
+
+    if (existingAppointment.status === 'CANCELLED') {
+      throw new AppError('Appointment is already cancelled', 400);
+    }
+
+    // Update appointment status to CANCELLED
+    const cancelledAppointment = await prisma.appointment.update({
+      where: { id },
+      data: {
+        status: 'CANCELLED',
+        cancellationReason: cancellationReason || 'Cancelled by customer',
+      },
+      include: {
+        service: true,
+        teamMember: {
+          include: {
+            user: {
+              select: {
+                fullName: true,
+                username: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            fullName: true,
+            email: true,
+            phoneNumber: true,
+          },
+        },
+      },
+    });
+
+    res.json({
+      message: 'Appointment cancelled successfully',
+      appointment: cancelledAppointment,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
