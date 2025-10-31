@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, Phone, MessageSquare, Check } from 'lucide-react';
+import { Calendar, Clock, User, Phone, MessageSquare, Check, Users } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { servicesApi, Service } from '../api/services';
+import { teamMembersApi, TeamMember } from '../api/teamMembers';
 import { appointmentsApi } from '../api/appointments';
 
 export const BookingPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
   const [services, setServices] = useState<Service[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedTeamMember, setSelectedTeamMember] = useState<string>('');
   const [isLoadingServices, setIsLoadingServices] = useState(true);
+  const [isLoadingTeamMembers, setIsLoadingTeamMembers] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -43,6 +47,27 @@ export const BookingPage = () => {
     fetchServices();
   }, []);
 
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        setIsLoadingTeamMembers(true);
+        const data = await teamMembersApi.getAllTeamMembers();
+        setTeamMembers(data.teamMembers || []);
+        // Auto-select if only one team member
+        if (data.teamMembers.length === 1) {
+          setSelectedTeamMember(data.teamMembers[0].id);
+        }
+      } catch (error) {
+        console.error('Failed to fetch team members:', error);
+        setError('Failed to load team members. Please refresh the page.');
+      } finally {
+        setIsLoadingTeamMembers(false);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
+
   const toggleService = (serviceId: string) => {
     setSelectedServices(prev =>
       prev.includes(serviceId)
@@ -56,9 +81,10 @@ export const BookingPage = () => {
   };
 
   const getTotalPrice = () => {
+    if (!selectedServices || selectedServices.length === 0) return 0;
     return selectedServices.reduce((total, serviceId) => {
       const service = services.find(s => s.id === serviceId);
-      return total + (service?.price || 0);
+      return total + (Number(service?.price) || 0);
     }, 0);
   };
 
@@ -94,6 +120,11 @@ export const BookingPage = () => {
     e.preventDefault();
     setError('');
 
+    if (!selectedTeamMember) {
+      setError('Please select a team member');
+      return;
+    }
+
     if (selectedServices.length === 0) {
       setError('Please select at least one service');
       return;
@@ -119,13 +150,12 @@ export const BookingPage = () => {
       appointmentDate.setHours(hour24, parseInt(minutes.replace(/\D/g, '')), 0, 0);
 
       // Create appointments for each selected service
-      // For now, we'll create them sequentially
       const createdAppointments = [];
       let currentStartTime = appointmentDate;
 
       for (const serviceId of selectedServices) {
         const appointment = await appointmentsApi.createAppointment({
-          teamMemberId: '00000000-0000-0000-0000-000000000000', // TODO: Get from team member selection
+          teamMemberId: selectedTeamMember,
           serviceId,
           startTime: currentStartTime.toISOString(),
           notes: formData.notes,
@@ -215,6 +245,100 @@ export const BookingPage = () => {
               </div>
             </div>
 
+            {/* Team Member Selection */}
+            <div>
+              <h2 className="text-2xl font-bold text-purple mb-4 flex items-center gap-2">
+                <Users className="w-6 h-6" />
+                Choose Your Nail Technician
+                {selectedTeamMember && (
+                  <span className="text-sm font-normal text-gray-600 ml-2">
+                    (Selected)
+                  </span>
+                )}
+              </h2>
+
+              {isLoadingTeamMembers ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
+                  <p className="mt-2 text-gray-600">Loading team members...</p>
+                </div>
+              ) : teamMembers.length === 0 ? (
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+                  No team members available at this time. Please try again later.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {teamMembers.map((member) => (
+                    <motion.div
+                      key={member.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedTeamMember(member.id)}
+                      className={`cursor-pointer border-2 rounded-lg p-4 transition-all ${
+                        selectedTeamMember === member.id
+                          ? 'border-primary-500 bg-primary-50 shadow-md'
+                          : 'border-gray-200 hover:border-primary-300 hover:shadow-sm'
+                      }`}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={selectedTeamMember === member.id}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedTeamMember(member.id);
+                        }
+                      }}
+                    >
+                      <div className="flex items-start gap-4">
+                        {/* Profile Image */}
+                        <div className="flex-shrink-0">
+                          {member.imageUrl ? (
+                            <img
+                              src={member.imageUrl}
+                              alt={member.user.fullName}
+                              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple to-primary-500 flex items-center justify-center">
+                              <span className="text-white text-xl font-bold">
+                                {member.user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Member Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-lg">
+                            {member.user.fullName}
+                          </h3>
+                          <p className="text-sm text-primary-600 font-medium mt-1">
+                            {member.specialty}
+                          </p>
+                          {member.bio && (
+                            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                              {member.bio}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Selection Indicator */}
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                          selectedTeamMember === member.id
+                            ? 'border-primary-500 bg-primary-500'
+                            : 'border-gray-300'
+                        }`}>
+                          {selectedTeamMember === member.id && (
+                            <Check className="w-4 h-4 text-white" />
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Service Selection */}
             <div>
               <h2 className="text-2xl font-bold text-purple mb-4">
@@ -231,44 +355,60 @@ export const BookingPage = () => {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
                   <p className="mt-2 text-gray-600">Loading services...</p>
                 </div>
+              ) : services.length === 0 ? (
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+                  No services available at this time. Please try again later.
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {services.map((service) => (
-                    <motion.div
-                      key={service.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => toggleService(service.id)}
-                      className={`cursor-pointer border-2 rounded-lg p-4 transition-all ${
-                        selectedServices.includes(service.id)
-                          ? 'border-primary-500 bg-primary-50'
-                          : 'border-gray-200 hover:border-primary-300'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{service.name}</h3>
-                          {service.description && (
-                            <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                          )}
-                          <div className="flex items-center gap-4 mt-2 text-sm text-gray-700">
-                            <span className="font-medium">${service.price}</span>
-                            <span>•</span>
-                            <span>30 min</span>
+                  {services.map((service) => {
+                    // Defensive programming: ensure service has required properties
+                    if (!service || !service.id) {
+                      console.error('Invalid service object:', service);
+                      return null;
+                    }
+
+                    return (
+                      <motion.div
+                        key={service.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => toggleService(service.id)}
+                        className={`cursor-pointer border-2 rounded-lg p-4 transition-all ${
+                          selectedServices.includes(service.id)
+                            ? 'border-primary-500 bg-primary-50'
+                            : 'border-gray-200 hover:border-primary-300'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">
+                              {service.name || 'Unnamed Service'}
+                            </h3>
+                            {service.description && (
+                              <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                            )}
+                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-700">
+                              <span className="font-medium">
+                                ${Number(service.price).toFixed(2)}
+                              </span>
+                              <span>•</span>
+                              <span>{service.duration || 30} min</span>
+                            </div>
+                          </div>
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                            selectedServices.includes(service.id)
+                              ? 'border-primary-500 bg-primary-500'
+                              : 'border-gray-300'
+                          }`}>
+                            {selectedServices.includes(service.id) && (
+                              <Check className="w-4 h-4 text-white" />
+                            )}
                           </div>
                         </div>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                          selectedServices.includes(service.id)
-                            ? 'border-primary-500 bg-primary-500'
-                            : 'border-gray-300'
-                        }`}>
-                          {selectedServices.includes(service.id) && (
-                            <Check className="w-4 h-4 text-white" />
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -367,7 +507,7 @@ export const BookingPage = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={isSubmitting || selectedServices.length === 0}
+              disabled={isSubmitting || selectedServices.length === 0 || !selectedTeamMember}
               className="w-full bg-gradient-to-r from-purple to-purple-dark text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Creating Appointment...' : `Book ${selectedServices.length} Service${selectedServices.length !== 1 ? 's' : ''}`}

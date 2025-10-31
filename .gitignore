@@ -1,96 +1,58 @@
+# ===========================================
+# Y&Y Beauty Salon - Git Ignore (Solo Dev)
+# ===========================================
+
 # Dependencies
 node_modules/
 */node_modules/
-<<<<<<< HEAD
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-=======
 .pnp
 .pnp.js
 
-# Environment variables - NEVER commit these!
+# Environment Variables - NEVER COMMIT!
 .env
-.env.local
-.env.development
-.env.development.local
-.env.test
-.env.test.local
-.env.production
-.env.production.local
-.env.staging
-.env.staging.local
-backend/.env
-backend/.env.*
-frontend/.env
-frontend/.env.*
-# Keep .env.example files only
-!.env.example
-!.env.*.example
-!backend/.env.example
-!frontend/.env.example
->>>>>>> 80364708c2aaf868c113f1b0d5c356390fb0a83f
+.env.*
+backend/.env*
+frontend/.env*
+# Exception: Keep guides
+!.env.guide.md
 
-# Build outputs
+# Build Outputs
 dist/
 build/
-client/dist/
-client/build/
-<<<<<<< HEAD
-=======
+*/dist/
+*/build/
 frontend/dist/
-frontend/build/
 backend/dist/
-backend/build/
->>>>>>> 80364708c2aaf868c113f1b0d5c356390fb0a83f
 
 # Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
-<<<<<<< HEAD
-=======
 pnpm-debug.log*
 lerna-debug.log*
->>>>>>> 80364708c2aaf868c113f1b0d5c356390fb0a83f
-*.log
 
-# OS files
+# OS Files
 .DS_Store
 Thumbs.db
-<<<<<<< HEAD
-=======
 desktop.ini
->>>>>>> 80364708c2aaf868c113f1b0d5c356390fb0a83f
+ehthumbs.db
+$RECYCLE.BIN/
 
 # IDE
 .vscode/
 .idea/
-<<<<<<< HEAD
-
-# MongoDB
-*.mongodb
-=======
 *.sublime-project
 *.sublime-workspace
 
-# Testing
+# Testingpmg
+e2e/
 coverage/
 *.lcov
 .nyc_output/
 
-# Docker
-docker-compose.override.yml
-*.dockerignore
-
 # Database
 *.db
-*.sqlite
-*.sqlite3
+*.sqlite*
 pgdata/
 postgres_data/
 redis_data/
@@ -99,7 +61,7 @@ redis_data/
 backend/prisma/dev.db
 backend/prisma/migrations/**/migration.sql.backup
 
-# Uploads & User Content
+# Uploads
 backend/uploads/*
 !backend/uploads/.gitkeep
 uploads/*
@@ -109,9 +71,8 @@ public/uploads/*
 
 # Frontend (Vite)
 frontend/.vite/
-frontend/node_modules/
 frontend/dist-ssr/
-frontend/*.local
+*.local
 
 # PWA
 sw.js
@@ -126,50 +87,27 @@ dev-dist/
 .parcel-cache/
 .eslintcache
 
-# Temp files
+# Temp Files
 *.tmp
 *.temp
 .tmp/
 .temp/
+tmp/
+temp/
 
-# Secrets & Credentials - CRITICAL!
+# Sensitive Files
 *.pem
 *.key
 *.p12
-*.jks
-*.pfx
 *.crt
 *.cer
-*.der
 *secret*
 *SECRET*
 *credentials*
-*CREDENTIALS*
 secrets/
 .secrets/
-config/secrets/
-*.asc
-*.gpg
 
-# SSL/TLS Certificates
-ssl/
-certs/
-*.csr
-
-# Cloud Provider Credentials
-.aws/
-.azure/
-.gcloud/
-*.json.enc
-service-account*.json
-gcloud-service-key.json
-
-# CI/CD Secrets
-.github/secrets/
-.gitlab/secrets/
-.circleci/secrets/
-
-# Database Backups & Dumps
+# Database Backups
 *.sql
 *.dump
 *.backup
@@ -177,149 +115,37 @@ gcloud-service-key.json
 backups/
 dumps/
 
-# Docker Secrets
-docker-compose.override.yml
-docker-compose.production.yml.local
-secrets.yml
-
-# Local Development Override Files
-local.yml
-local.env
-override.env
-
-# Generated Secrets Files
-generated_secrets.txt
-secrets.txt
-passwords.txt
-
-# JWT Keys
-*.jwt
-jwt-*.key
-public-key.pem
-private-key.pem
-
 # SSH Keys
-id_rsa
-id_rsa.pub
-id_ed25519
-id_ed25519.pub
+id_rsa*
+id_ed25519*
 known_hosts
 
-# Kubernetes Secrets
-*-secrets.yaml
-*-secret.yaml
-k8s-secrets/
-
-# Terraform State (may contain secrets)
-*.tfstate
-*.tfstate.backup
-.terraform/
-
-# Ansible Vault
-vault.yml
-vault-*.yml
-*.vault
->>>>>>> 80364708c2aaf868c113f1b0d5c356390fb0a83f
-
-# Misc
-*.swp
-*.swo
-*~
-<<<<<<< HEAD
-=======
-.history/
-
-# macOS
-.AppleDouble
-.LSOverride
-._*
-
-# Windows
-ehthumbs.db
-ehthumbs_vista.db
-[Dd]esktop.ini
-$RECYCLE.BIN/
-
-# Linux
-.fuse_hidden*
-.directory
-.Trash-*
-
-# Backup files
-*~
-*.orig
-*.rej
-*.bak
-*.backup
-
-# Session files
-.session
-sessions/
-
-# Temporary uploads
-tmp/
-temp/
-*.tmp
-
-# Screenshots (may contain sensitive info)
+# Screenshots (may contain sensitive data)
 screenshot*.png
 Screenshot*.png
 screen-*.png
 check*.png
 check*.jpg
 
-# Working notes and temporary documentation
+# Working Notes & Temporary Docs
 Features.txt
 TODO.txt
 NOTES.txt
 notes.md
-WORK_SUMMARY.md
-DASHBOARD_TESTING.md
-PHONE_AUTH_UPDATE.md
-ROUTING_UPDATE_SUMMARY.md
-CLEANUP-SUMMARY.md
-CONTAINER_FIX_SUMMARY.md
 *_TESTING.md
 *_UPDATE.md
 *_SUMMARY.md
-
-# Commit summaries
 COMMIT_SUMMARY.txt
 
-# Project documentation (local only - not tracked)
-PROJECT_DOCUMENTATION.md
+# Summaries (development notes)
+Summaries/
 
-# Excessive documentation (keep only README.md + optional deployment docs)
-READ_ME_FIRST.md
-FINAL_STATUS.md
-QUICK_START.md
-FIX_ENV_VARIABLE.md
-COST_EFFECTIVE_DEPLOYMENT.md
-DATABASE_AND_CONTAINERS_EXPLAINED.md
-RENDER_DEPLOYMENT.md
-SECURITY_AND_DEPLOYMENT_UPDATE.md
-.gitignore-verification.md
-.gitignore-additions.md
-.gitignore-final-summary.txt
-WHAT_TO_COMMIT.md
-DEPLOYMENT_GUIDE.md
-SECURITY_CHECKLIST.md
-
-# API Keys and Sensitive Data Files
-*api-key*.txt
-*api_key*.txt
-*apikey*.txt
-*API_KEY*.txt
-*credentials*.json
-*credentials*.txt
-*.credentials
-config.local.*
-local.config.*
-*-secrets.json
-secrets.json
-.secrets.json
-
-# Windows/System temp files
+# Misc
+*.swp
+*.swo
+*~
+*.orig
+*.rej
+.history/
 NUL
 nul
->>>>>>> 80364708c2aaf868c113f1b0d5c356390fb0a83f

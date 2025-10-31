@@ -1,18 +1,42 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { Calendar, Clock, Star, User, Award, Image } from 'lucide-react';
+import { appointmentsApi, Appointment } from '../api/appointments';
 
 export const CustomerDashboardPage = () => {
-  const { user, isAuthenticated, loadUser } = useAuthStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // This component is only rendered by DashboardPage which is already protected
+  // User data is guaranteed to be loaded by ProtectedRoute
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
+    const fetchAppointments = async () => {
+      try {
+        setIsLoading(true);
+        const data = await appointmentsApi.getMyAppointments();
+        setAppointments(data.appointments || []);
+      } catch (error) {
+        console.error('Failed to fetch appointments:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchAppointments();
     }
-    loadUser();
-  }, [isAuthenticated, navigate, loadUser]);
+  }, [user]);
+
+  const upcomingAppointments = appointments.filter(
+    apt => new Date(apt.startTime) >= new Date() && apt.status !== 'CANCELLED' && apt.status !== 'COMPLETED'
+  );
+
+  const pastAppointments = appointments.filter(
+    apt => apt.status === 'COMPLETED'
+  );
 
   if (!user) {
     return (
@@ -52,7 +76,7 @@ export const CustomerDashboardPage = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900">0</p>
+                <p className="text-2xl font-bold text-gray-900">{upcomingAppointments.length}</p>
               </div>
             </div>
           </div>
@@ -64,7 +88,7 @@ export const CustomerDashboardPage = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Past Visits</p>
-                <p className="text-2xl font-bold text-gray-900">0</p>
+                <p className="text-2xl font-bold text-gray-900">{pastAppointments.length}</p>
               </div>
             </div>
           </div>
@@ -104,16 +128,72 @@ export const CustomerDashboardPage = () => {
                 <h2 className="text-lg font-semibold text-gray-900">Upcoming Appointments</h2>
               </div>
               <div className="p-6">
-                <div className="text-center py-12">
-                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No upcoming appointments</p>
-                  <button
-                    onClick={() => navigate('/booking')}
-                    className="mt-4 btn btn-primary"
-                  >
-                    Book Appointment
-                  </button>
-                </div>
+                {isLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading appointments...</p>
+                  </div>
+                ) : upcomingAppointments.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">No upcoming appointments</p>
+                    <button
+                      onClick={() => navigate('/booking')}
+                      className="mt-4 btn btn-primary"
+                    >
+                      Book Appointment
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {upcomingAppointments.map((apt) => (
+                      <div
+                        key={apt.id}
+                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-gray-900">{apt.service.name}</h3>
+                            <div className="mt-2 space-y-1 text-sm text-gray-600">
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-2" />
+                                {new Date(apt.startTime).toLocaleDateString()}
+                              </div>
+                              <div className="flex items-center">
+                                <Clock className="h-4 w-4 mr-2" />
+                                {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                              {apt.teamMember && (
+                                <div className="flex items-center">
+                                  <User className="h-4 w-4 mr-2" />
+                                  {apt.teamMember.user.fullName}
+                                </div>
+                              )}
+                            </div>
+                            {apt.notes && (
+                              <p className="mt-2 text-sm text-gray-600">Note: {apt.notes}</p>
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                              apt.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
+                              apt.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {apt.status}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => navigate('/booking')}
+                      className="w-full btn btn-outline"
+                    >
+                      Book Another Appointment
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 

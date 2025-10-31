@@ -1,7 +1,8 @@
+import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { prisma } from '../config/database';
-import { AppError } from '../middleware/error.middleware';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { AppError } from '../middleware/error.middleware';
 
 // Create a new appointment
 export const createAppointment = async (req: AuthRequest, res: Response) => {
@@ -23,77 +24,132 @@ export const createAppointment = async (req: AuthRequest, res: Response) => {
       throw new AppError('Service, team member, and start time are required', 400);
     }
 
-    // Check if the slot is available
     const appointmentStartTime = new Date(startTime);
-    const service = await prisma.service.findUnique({ where: { id: serviceId } });
 
-    if (!service) {
-      throw new AppError('Service not found', 404);
-    }
+    // Use serializable transaction to prevent race conditions
+    // This ensures that concurrent requests don't see the same "available" slot
+    const appointment = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        // Fetch service details within transaction
+        const service = await tx.service.findUnique({ where: { id: serviceId } });
 
-    // Calculate end time based on service duration
-    const appointmentEndTime = new Date(appointmentStartTime.getTime() + service.duration * 60000);
+        if (!service) {
+          throw new AppError('Service not found', 404);
+        }
 
-    // Check for conflicts
-    const conflictingAppointment = await prisma.appointment.findFirst({
-      where: {
-        teamMemberId,
-        status: { notIn: ['CANCELLED', 'NO_SHOW'] },
-        OR: [
-          {
-            AND: [
-              { startTime: { lte: appointmentStartTime } },
-              { endTime: { gt: appointmentStartTime } },
-            ],
+        // Calculate end time based on service duration
+        const appointmentEndTime = new Date(appointmentStartTime.getTime() + service.duration * 60000);
+
+        // Check for appointment conflicts
+        const conflictingAppointments = await tx.appointment.findMany({
+          where: {
+            teamMemberId: teamMemberId,
+            status: {
+              notIn: ['CANCELLED', 'NO_SHOW']
+            },
+            OR: [
+              {
+                AND: [
+                  { startTime: { lte: appointmentStartTime } },
+                  { endTime: { gt: appointmentStartTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { lt: appointmentEndTime } },
+                  { endTime: { gte: appointmentEndTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { gte: appointmentStartTime } },
+                  { endTime: { lte: appointmentEndTime } }
+                ]
+              }
+            ]
           },
-          {
-            AND: [
-              { startTime: { lt: appointmentEndTime } },
-              { endTime: { gte: appointmentEndTime } },
-            ],
+          select: { id: true }
+        });
+
+        if (conflictingAppointments.length > 0) {
+          throw new AppError('This time slot is not available', 409);
+        }
+
+        // Check for blocked slots that might conflict
+        const blockedSlots = await tx.blockedSlot.findMany({
+          where: {
+            teamMemberId: teamMemberId,
+            OR: [
+              {
+                AND: [
+                  { startTime: { lte: appointmentStartTime } },
+                  { endTime: { gt: appointmentStartTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { lt: appointmentEndTime } },
+                  { endTime: { gte: appointmentEndTime } }
+                ]
+              },
+              {
+                AND: [
+                  { startTime: { gte: appointmentStartTime } },
+                  { endTime: { lte: appointmentEndTime } }
+                ]
+              }
+            ]
           },
-        ],
-      },
-    });
+          select: { id: true }
+        });
 
-    if (conflictingAppointment) {
-      throw new AppError('This time slot is not available', 409);
-    }
+        if (blockedSlots.length > 0) {
+          throw new AppError('This time slot is blocked and not available', 409);
+        }
 
-    // Create the appointment
-    const appointment = await prisma.appointment.create({
-      data: {
-        userId: userId as string,
-        serviceId,
-        teamMemberId,
-        startTime: appointmentStartTime,
-        endTime: appointmentEndTime,
-        status: 'PENDING',
-        notes: notes || null,
-      },
-      include: {
-        service: true,
-        teamMember: {
+        // Create the appointment within the transaction
+        const newAppointment = await tx.appointment.create({
+          data: {
+            userId: userId as string,
+            serviceId,
+            teamMemberId,
+            startTime: appointmentStartTime,
+            endTime: appointmentEndTime,
+            status: 'PENDING',
+            notes: notes || null,
+          },
           include: {
+            service: true,
+            teamMember: {
+              include: {
+                user: {
+                  select: {
+                    fullName: true,
+                    username: true,
+                  },
+                },
+              },
+            },
             user: {
               select: {
                 fullName: true,
-                username: true,
+                email: true,
+                phoneNumber: true,
               },
             },
           },
-        },
-        user: {
-          select: {
-            fullName: true,
-            email: true,
-            phoneNumber: true,
-          },
-        },
-      },
-    });
+        });
 
-    // Handle recurring appointments
+        return newAppointment;
+      },
+      {
+        isolationLevel: 'Serializable', // Highest isolation level to prevent phantom reads
+        timeout: 10000, // 10 second timeout for transaction
+      }
+    );
+
+    // Handle recurring appointments outside the main transaction
+    // This prevents holding locks for too long
     if (isRecurring && recurringPattern && recurringEndDate) {
       await createRecurringAppointments(
         userId as string,
@@ -103,7 +159,7 @@ export const createAppointment = async (req: AuthRequest, res: Response) => {
         recurringPattern,
         new Date(recurringEndDate),
         notes,
-        service.duration
+        appointment.service.duration
       );
     }
 
@@ -127,7 +183,6 @@ async function createRecurringAppointments(
   notes: string | null,
   serviceDuration: number
 ) {
-  const appointments = [];
   let currentDate = new Date(startDate);
 
   // Determine interval based on pattern
@@ -140,33 +195,65 @@ async function createRecurringAppointments(
 
     const currentEndTime = new Date(currentDate.getTime() + serviceDuration * 60000);
 
-    // Check availability before creating
-    const existingAppointment = await prisma.appointment.findFirst({
-      where: {
-        teamMemberId,
-        startTime: currentDate,
-        status: { notIn: ['CANCELLED', 'NO_SHOW'] },
-      },
-    });
+    // Use transaction for each recurring appointment to prevent race conditions
+    try {
+      await prisma.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          // Check availability
+          const conflictingAppointments = await tx.appointment.findMany({
+            where: {
+              teamMemberId: teamMemberId,
+              status: {
+                notIn: ['CANCELLED', 'NO_SHOW']
+              },
+              OR: [
+                {
+                  AND: [
+                    { startTime: { lte: currentDate } },
+                    { endTime: { gt: currentDate } }
+                  ]
+                },
+                {
+                  AND: [
+                    { startTime: { lt: currentEndTime } },
+                    { endTime: { gte: currentEndTime } }
+                  ]
+                },
+                {
+                  AND: [
+                    { startTime: { gte: currentDate } },
+                    { endTime: { lte: currentEndTime } }
+                  ]
+                }
+              ]
+            },
+            select: { id: true }
+          });
 
-    if (!existingAppointment) {
-      appointments.push({
-        userId,
-        serviceId,
-        teamMemberId,
-        startTime: currentDate,
-        endTime: currentEndTime,
-        status: 'PENDING' as any,
-        notes,
-      });
+          if (conflictingAppointments.length === 0) {
+            // Create appointment if slot is available
+            await tx.appointment.create({
+              data: {
+                userId,
+                serviceId,
+                teamMemberId,
+                startTime: currentDate,
+                endTime: currentEndTime,
+                status: 'PENDING',
+                notes,
+              },
+            });
+          }
+        },
+        {
+          isolationLevel: 'Serializable',
+          timeout: 10000,
+        }
+      );
+    } catch (error) {
+      // Log error but continue with other recurring appointments
+      console.error(`Failed to create recurring appointment for ${currentDate}:`, error);
     }
-  }
-
-  // Batch create recurring appointments
-  if (appointments.length > 0) {
-    await prisma.appointment.createMany({
-      data: appointments,
-    });
   }
 }
 

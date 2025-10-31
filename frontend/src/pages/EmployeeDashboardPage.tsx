@@ -1,38 +1,46 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { appointmentsApi, Appointment } from '../api/appointments';
 import { Calendar, Clock, Users, TrendingUp, Settings, Bell, CheckCircle, XCircle, AlertCircle, DollarSign } from 'lucide-react';
 
 export const EmployeeDashboardPage = () => {
-  const { user, isAuthenticated, loadUser } = useAuthStore();
-  const navigate = useNavigate();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const { user } = useAuthStore();
+  const [todayAppointments, setTodayAppointments] = useState<Appointment[]>([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+  const [stats, setStats] = useState({
+    todayCount: 0,
+    upcomingCount: 0,
+    totalCompleted: 0,
+    thisMonthCompleted: 0,
+  });
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-    loadUser();
-  }, [isAuthenticated, navigate, loadUser]);
+  // This component is only rendered by DashboardPage which is already protected
+  // User data is guaranteed to be loaded by ProtectedRoute
 
-  // Fetch appointments
+  // Fetch employee dashboard data
   useEffect(() => {
-    const fetchAppointments = async () => {
+    const fetchDashboardData = async () => {
       try {
         setIsLoadingAppointments(true);
-        const data = await appointmentsApi.getMyAppointments(true);
-        setAppointments(data.appointments || []);
+        const data = await appointmentsApi.getEmployeeDashboard();
+        setTodayAppointments(data.todayAppointments || []);
+        setUpcomingAppointments(data.upcomingAppointments || []);
+        setStats(data.stats || {
+          todayCount: 0,
+          upcomingCount: 0,
+          totalCompleted: 0,
+          thisMonthCompleted: 0,
+        });
       } catch (error) {
-        console.error('Failed to fetch appointments:', error);
+        console.error('Failed to fetch dashboard data:', error);
       } finally {
         setIsLoadingAppointments(false);
       }
     };
 
     if (user) {
-      fetchAppointments();
+      fetchDashboardData();
     }
   }, [user]);
 
@@ -48,20 +56,6 @@ export const EmployeeDashboardPage = () => {
   }
 
   // Helper functions
-  const getTodayAppointments = () => {
-    const today = new Date().toDateString();
-    return appointments.filter(apt => new Date(apt.startTime).toDateString() === today);
-  };
-
-  const getWeekAppointments = () => {
-    const now = new Date();
-    const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    return appointments.filter(apt => {
-      const aptDate = new Date(apt.startTime);
-      return aptDate >= now && aptDate <= weekFromNow;
-    });
-  };
-
   const getStatusBadge = (status: Appointment['status']) => {
     const badges = {
       PENDING: { color: 'bg-yellow-100 text-yellow-800', icon: AlertCircle, text: 'Pending' },
@@ -88,9 +82,6 @@ export const EmployeeDashboardPage = () => {
       day: 'numeric',
     });
   };
-
-  const todayAppointments = getTodayAppointments();
-  const weekAppointments = getWeekAppointments();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple/5 via-white to-pink/5 pt-24 pb-12">
@@ -119,7 +110,7 @@ export const EmployeeDashboardPage = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Today's Appointments</p>
-                <p className="text-2xl font-bold text-gray-900">{todayAppointments.length}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.todayCount}</p>
               </div>
             </div>
           </div>
@@ -130,8 +121,8 @@ export const EmployeeDashboardPage = () => {
                 <Clock className="h-8 w-8 text-primary-500" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">This Week</p>
-                <p className="text-2xl font-bold text-gray-900">{weekAppointments.length}</p>
+                <p className="text-sm font-medium text-gray-600">Next 7 Days</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.upcomingCount}</p>
               </div>
             </div>
           </div>
@@ -142,8 +133,8 @@ export const EmployeeDashboardPage = () => {
                 <Users className="h-8 w-8 text-primary-500" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Appointments</p>
-                <p className="text-2xl font-bold text-gray-900">{appointments.length}</p>
+                <p className="text-sm font-medium text-gray-600">Total Completed</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.totalCompleted}</p>
               </div>
             </div>
           </div>
@@ -154,10 +145,8 @@ export const EmployeeDashboardPage = () => {
                 <TrendingUp className="h-8 w-8 text-primary-500" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {appointments.filter(apt => apt.status === 'CONFIRMED').length}
-                </p>
+                <p className="text-sm font-medium text-gray-600">This Month</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.thisMonthCompleted}</p>
               </div>
             </div>
           </div>
@@ -212,7 +201,7 @@ export const EmployeeDashboardPage = () => {
                             <span className="mx-2">•</span>
                             <span>{apt.service.duration} min</span>
                             <span className="mx-2">•</span>
-                            <span className="font-medium text-gray-900">${apt.service.price}</span>
+                            <span className="font-medium text-gray-900">${Number(apt.service.price).toFixed(2)}</span>
                           </div>
                           <div className="mt-2 text-sm text-gray-600">
                             <span className="font-medium">Phone:</span> {apt.user.phoneNumber}
