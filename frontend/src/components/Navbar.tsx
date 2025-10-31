@@ -206,16 +206,19 @@ const Navbar = () => {
               )}
 
               {/* Language Switcher */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleLanguage}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-full px-3 py-2 text-sm text-white hover:bg-white/20 hover:border-white/30 transition-all font-semibold"
-                title="Switch language"
-              >
-                <Globe className="w-4 h-4" />
-                <span>{language}</span>
-              </motion.button>
+              {/* Only show language toggle if user is not logged in or doesn't have a preference set */}
+              {(!isAuthenticated || !user?.languagePreference) && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={toggleLanguage}
+                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-full px-3 py-2 text-sm text-white hover:bg-white/20 hover:border-white/30 transition-all font-semibold"
+                  title="Switch language"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>{language}</span>
+                </motion.button>
+              )}
             </div>
 
             {/* Mobile Menu Button - Enhanced Animation */}
@@ -293,16 +296,19 @@ const Navbar = () => {
                 </div>
 
                 {/* Preferences */}
-                <div className="mb-8">
-                  {/* Language Switcher */}
-                  <button
-                    onClick={toggleLanguage}
-                    className="w-full flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-pink-light font-semibold py-3 px-4 rounded-full hover:bg-white/20 transition-all"
-                  >
-                    <Globe className="w-5 h-5" />
-                    <span>{language}</span>
-                  </button>
-                </div>
+                {/* Only show language toggle if user is not logged in or doesn't have a preference set */}
+                {(!isAuthenticated || !user?.languagePreference) && (
+                  <div className="mb-8">
+                    {/* Language Switcher */}
+                    <button
+                      onClick={toggleLanguage}
+                      className="w-full flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-pink-light font-semibold py-3 px-4 rounded-full hover:bg-white/20 transition-all"
+                    >
+                      <Globe className="w-5 h-5" />
+                      <span>{language}</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* Navigation Links */}
                 <nav className="space-y-4 mb-12">

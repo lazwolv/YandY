@@ -35,4 +35,7 @@ router.post('/logout', authenticate, authController.logout);
 // Get profile (requires authentication)
 router.get('/profile', authenticate, authController.getProfile);
 
+// Update language preference (requires authentication)
+router.patch('/language-preference', authenticate, authController.updateLanguagePreference);
+
 export default router;

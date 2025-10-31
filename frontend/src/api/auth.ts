@@ -35,6 +35,7 @@ export interface UserProfile {
   fullName: string;
   role: string;
   points: number;
+  languagePreference?: string;
   createdAt: string;
   teamMember?: {
     id: string;
@@ -61,6 +62,11 @@ export const authApi = {
 
   getProfile: async (): Promise<{ user: UserProfile }> => {
     const response = await apiClient.get('/auth/profile');
+    return response.data;
+  },
+
+  updateLanguagePreference: async (languagePreference: string): Promise<{ message: string; user: UserProfile }> => {
+    const response = await apiClient.patch('/auth/language-preference', { languagePreference });
     return response.data;
   },
 };
