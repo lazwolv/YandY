@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { Calendar, Clock, Star, User, Award, Image } from 'lucide-react';
+import { Calendar, Clock, Star, User, Award, Image, Edit, X } from 'lucide-react';
 import { appointmentsApi, Appointment } from '../api/appointments';
 
 export const CustomerDashboardPage = () => {
@@ -49,19 +49,38 @@ export const CustomerDashboardPage = () => {
     );
   }
 
+  const firstName = user.fullName.split(' ')[0];
+  const memberSinceYear = new Date(user.createdAt).getFullYear();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple/5 via-white to-pink/5 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header - Modern gradient card */}
         <div className="mb-8 bg-gradient-to-r from-purple to-purple-dark rounded-2xl shadow-2xl p-8 text-white">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">Welcome back, {user.fullName}! 👋</h1>
-              <p className="text-white/90 text-lg">Manage your appointments, photos, and rewards</p>
+            <div className="flex-1">
+              <h1 className="text-4xl font-bold mb-4">Welcome back, {firstName}! 👋</h1>
+              <p className="text-white/90 text-lg mb-4">Manage your appointments, photos, and rewards</p>
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>{user.fullName}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>@{user.username}</span>
+                </div>
+                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">
+                  Customer
+                </div>
+                <div className="flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  <span>Member Since {memberSinceYear}</span>
+                </div>
+              </div>
             </div>
             <div className="hidden lg:block">
               <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center">
-                <span className="text-5xl font-bold">{user.fullName.charAt(0).toUpperCase()}</span>
+                <span className="text-5xl font-bold">{firstName.charAt(0).toUpperCase()}</span>
               </div>
             </div>
           </div>
@@ -118,10 +137,8 @@ export const CustomerDashboardPage = () => {
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Appointments */}
-          <div className="lg:col-span-2 space-y-6">
+        {/* Main Content */}
+        <div className="space-y-6">
             {/* Upcoming Appointments */}
             <div className="bg-white rounded-lg shadow">
               <div className="px-6 py-4 border-b border-gray-200">
@@ -151,7 +168,7 @@ export const CustomerDashboardPage = () => {
                         key={apt.id}
                         className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                       >
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-start mb-3">
                           <div className="flex-1">
                             <h3 className="font-semibold text-gray-900">{apt.service.name}</h3>
                             <div className="mt-2 space-y-1 text-sm text-gray-600">
@@ -184,11 +201,27 @@ export const CustomerDashboardPage = () => {
                             </span>
                           </div>
                         </div>
+                        <div className="flex gap-2 pt-3 border-t border-gray-100">
+                          <button
+                            onClick={() => {/* TODO: Implement reschedule */}}
+                            className="flex-1 btn btn-outline btn-sm text-primary-600 border-primary-300 hover:bg-primary-50"
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Reschedule
+                          </button>
+                          <button
+                            onClick={() => {/* TODO: Implement cancel */}}
+                            className="flex-1 btn btn-outline btn-sm text-red-600 border-red-300 hover:bg-red-50"
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     ))}
                     <button
                       onClick={() => navigate('/booking')}
-                      className="w-full btn btn-outline"
+                      className="w-full bg-primary-500 text-white hover:bg-primary-600 py-3 px-6 rounded-lg font-medium transition-colors"
                     >
                       Book Another Appointment
                     </button>
@@ -197,92 +230,25 @@ export const CustomerDashboardPage = () => {
               </div>
             </div>
 
-            {/* My Photos */}
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">My Gallery</h2>
-                <button
-                  onClick={() => navigate('/upload-photo')}
-                  className="btn btn-outline btn-sm"
-                >
-                  <Image className="h-4 w-4 mr-2" />
-                  Upload Photo
-                </button>
-              </div>
-              <div className="p-6">
-                <div className="text-center py-12">
-                  <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No photos uploaded yet</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Share your amazing results and get votes!
-                  </p>
-                </div>
-              </div>
+          {/* My Photos */}
+          <div className="bg-white rounded-lg shadow">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">My Gallery</h2>
+              <button
+                onClick={() => navigate('/upload-photo')}
+                className="btn btn-outline btn-sm"
+              >
+                <Image className="h-4 w-4 mr-2" />
+                Upload Photo
+              </button>
             </div>
-          </div>
-
-          {/* Right Column - Profile & Quick Actions */}
-          <div className="space-y-6">
-            {/* Profile Card */}
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Profile</h2>
-              </div>
-              <div className="p-6">
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary-100 text-primary-600 text-2xl font-bold mb-3">
-                    {user.fullName.charAt(0).toUpperCase()}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">{user.fullName}</h3>
-                  <p className="text-sm text-gray-600">@{user.username}</p>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800 mt-2">
-                    <User className="h-3 w-3 mr-1" />
-                    Customer
-                  </span>
-                </div>
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <p className="text-gray-600">Email</p>
-                    <p className="font-medium text-gray-900">{user.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Phone</p>
-                    <p className="font-medium text-gray-900">{user.phoneNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Member Since</p>
-                    <p className="font-medium text-gray-900">
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <button
-                  onClick={() => navigate('/booking')}
-                  className="w-full btn bg-primary-500 text-white hover:bg-primary-600 justify-start"
-                >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Book Appointment
-                </button>
-                <button
-                  onClick={() => navigate('/upload-photo')}
-                  className="w-full btn bg-gray-100 text-gray-700 hover:bg-gray-200 justify-start"
-                >
-                  <Image className="h-5 w-5 mr-2" />
-                  Upload Photo
-                </button>
-                <button className="w-full btn bg-gray-100 text-gray-700 hover:bg-gray-200 justify-start">
-                  <Star className="h-5 w-5 mr-2" />
-                  View Gallery
-                </button>
+            <div className="p-6">
+              <div className="text-center py-12">
+                <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600">No photos uploaded yet</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Share your amazing results and get votes!
+                </p>
               </div>
             </div>
           </div>
