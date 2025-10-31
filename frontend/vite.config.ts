@@ -16,6 +16,10 @@ export default defineConfig({
         short_name: 'Y&Y Salon',
         description: 'Book beauty appointments easily',
         theme_color: '#8d60a9',
+        background_color: '#8d60a9',
+        display: 'standalone',
+        start_url: '/',
+        scope: '/',
         icons: [
           {
             src: '/images/favicon.png',
@@ -26,6 +30,34 @@ export default defineConfig({
             src: '/images/favicon.png',
             sizes: '512x512',
             type: 'image/png',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/api\..*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 10,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 5, // 5 minutes
+              },
+            },
           },
         ],
       },
