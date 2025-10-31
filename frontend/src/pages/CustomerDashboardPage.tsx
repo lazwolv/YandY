@@ -9,6 +9,7 @@ export const CustomerDashboardPage = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   // This component is only rendered by DashboardPage which is already protected
   // User data is guaranteed to be loaded by ProtectedRoute
@@ -51,6 +52,33 @@ export const CustomerDashboardPage = () => {
 
   const firstName = user.fullName.split(' ')[0];
   const memberSinceYear = new Date(user.createdAt).getFullYear();
+
+  const handleReschedule = (appointmentId: string) => {
+    // Navigate to booking page with appointment ID to reschedule
+    navigate(`/booking?reschedule=${appointmentId}`);
+  };
+
+  const handleCancel = async (appointmentId: string) => {
+    if (!window.confirm('Are you sure you want to cancel this appointment?')) {
+      return;
+    }
+
+    try {
+      setCancellingId(appointmentId);
+      await appointmentsApi.cancelAppointment(appointmentId);
+
+      // Refresh appointments list
+      const data = await appointmentsApi.getMyAppointments();
+      setAppointments(data.appointments || []);
+
+      alert('Appointment cancelled successfully');
+    } catch (error: any) {
+      console.error('Failed to cancel appointment:', error);
+      alert(error.response?.data?.message || 'Failed to cancel appointment');
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple/5 via-white to-pink/5 pt-24 pb-12">
@@ -201,20 +229,21 @@ export const CustomerDashboardPage = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="flex gap-2 pt-3 border-t border-gray-100">
+                        <div className="flex gap-3 pt-3 border-t border-gray-100">
                           <button
-                            onClick={() => {/* TODO: Implement reschedule */}}
-                            className="flex-1 btn btn-outline btn-sm text-primary-600 border-primary-300 hover:bg-primary-50"
+                            onClick={() => handleReschedule(apt.id)}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-sm hover:shadow-md font-medium"
                           >
-                            <Edit className="h-4 w-4 mr-1" />
+                            <Edit className="h-4 w-4" />
                             Reschedule
                           </button>
                           <button
-                            onClick={() => {/* TODO: Implement cancel */}}
-                            className="flex-1 btn btn-outline btn-sm text-red-600 border-red-300 hover:bg-red-50"
+                            onClick={() => handleCancel(apt.id)}
+                            disabled={cancellingId === apt.id}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-sm hover:shadow-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <X className="h-4 w-4 mr-1" />
-                            Cancel
+                            <X className="h-4 w-4" />
+                            {cancellingId === apt.id ? 'Cancelling...' : 'Cancel'}
                           </button>
                         </div>
                       </div>

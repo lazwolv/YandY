@@ -5,6 +5,8 @@ import {
   updateAppointmentStatus,
   getEmployeeAppointments,
   getEmployeeDashboard,
+  rescheduleAppointment,
+  cancelAppointment,
 } from '../controllers/appointment.controller';
 import { authenticate } from '../middleware/auth.middleware';
 
@@ -16,6 +18,8 @@ router.use(authenticate);
 // Customer routes
 router.post('/', createAppointment);
 router.get('/my-appointments', getUserAppointments);
+router.patch('/:id/reschedule', rescheduleAppointment);
+router.patch('/:id/cancel', cancelAppointment);
 
 // Employee routes
 router.get('/employee/dashboard', getEmployeeDashboard);
