@@ -4,6 +4,7 @@ import { prisma } from '../config/database';
 import { generateTokenPair, verifyRefreshToken } from '../utils/jwt';
 import { AppError } from '../middleware/error.middleware';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { normalizePhoneNumber } from '../utils/phone';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -14,10 +15,13 @@ export const register = async (req: Request, res: Response) => {
       throw new AppError('All fields are required', 400);
     }
 
+    // Normalize phone number to E.164 format
+    const normalizedPhone = normalizePhoneNumber(phoneNumber);
+
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }, { phoneNumber }],
+        OR: [{ email }, { username }, { phoneNumber: normalizedPhone }],
       },
     });
 
@@ -33,7 +37,7 @@ export const register = async (req: Request, res: Response) => {
       data: {
         email,
         username,
-        phoneNumber,
+        phoneNumber: normalizedPhone,
         passwordHash,
         fullName,
         role: 'CUSTOMER',
@@ -89,10 +93,19 @@ export const login = async (req: Request, res: Response) => {
       throw new AppError('Username and password are required', 400);
     }
 
+    // Normalize phone number if it looks like a phone (contains digits)
+    const normalizedIdentifier = /\d/.test(loginIdentifier)
+      ? normalizePhoneNumber(loginIdentifier)
+      : loginIdentifier;
+
     // Find user by username, email, or phone
     const user = await prisma.user.findFirst({
       where: {
-        OR: [{ username: loginIdentifier }, { email: loginIdentifier }, { phoneNumber: loginIdentifier }],
+        OR: [
+          { username: loginIdentifier },
+          { email: loginIdentifier },
+          { phoneNumber: normalizedIdentifier },
+        ],
       },
     });
 

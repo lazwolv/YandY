@@ -58,6 +58,7 @@ services:
       FRONTEND_URL: http://localhost:3000
     ports:
       - "8000:8000"
+      - "5555:5555"  # Prisma Studio
     volumes:
       - ./backend:/app
       - /app/node_modules

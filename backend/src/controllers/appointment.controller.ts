@@ -728,3 +728,138 @@ export const cancelAppointment = async (req: AuthRequest, res: Response) => {
     throw error;
   }
 };
+
+// NEW: Create multiple appointments atomically (all-or-nothing)
+export const createBulkAppointment = async (req: AuthRequest, res: Response) => {
+  try {
+    const { teamMemberId, serviceIds, startTime, notes } = req.body;
+    const userId = req.user?.userId;
+
+    if (!teamMemberId || !serviceIds || !Array.isArray(serviceIds) || serviceIds.length === 0 || !startTime) {
+      throw new AppError('Team member, services, and start time are required', 400);
+    }
+
+    const appointmentStartTime = new Date(startTime);
+
+    // Use serializable transaction for atomic bulk creation
+    const appointments = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        const createdAppointments = [];
+        let currentStartTime = appointmentStartTime;
+
+        // Fetch all services upfront
+        const services = await tx.service.findMany({
+          where: { id: { in: serviceIds } },
+        });
+
+        if (services.length !== serviceIds.length) {
+          throw new AppError('One or more services not found', 404);
+        }
+
+        // FIRST: Check if ALL time slots are available
+        for (let i = 0; i < services.length; i++) {
+          const service = services[i];
+          const slotEndTime = new Date(currentStartTime.getTime() + service.duration * 60000);
+
+          // Check for conflicts
+          const conflictingAppointments = await tx.appointment.findMany({
+            where: {
+              teamMemberId,
+              status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+              OR: [
+                { AND: [{ startTime: { lte: currentStartTime } }, { endTime: { gt: currentStartTime } }] },
+                { AND: [{ startTime: { lt: slotEndTime } }, { endTime: { gte: slotEndTime } }] },
+                { AND: [{ startTime: { gte: currentStartTime } }, { endTime: { lte: slotEndTime } }] },
+              ],
+            },
+          });
+
+          if (conflictingAppointments.length > 0) {
+            throw new AppError(
+              `Time slot not available: ${currentStartTime.toLocaleTimeString()} for ${service.name}. Please choose a different time.`,
+              409
+            );
+          }
+
+          // Check for blocked slots
+          const blockedSlots = await tx.blockedSlot.findMany({
+            where: {
+              teamMemberId,
+              OR: [
+                { AND: [{ startTime: { lte: currentStartTime } }, { endTime: { gt: currentStartTime } }] },
+                { AND: [{ startTime: { lt: slotEndTime } }, { endTime: { gte: slotEndTime } }] },
+                { AND: [{ startTime: { gte: currentStartTime } }, { endTime: { lte: slotEndTime } }] },
+              ],
+            },
+          });
+
+          if (blockedSlots.length > 0) {
+            throw new AppError(
+              `Time slot is blocked: ${currentStartTime.toLocaleTimeString()} - ${slotEndTime.toLocaleTimeString()}`,
+              409
+            );
+          }
+
+          // Move to next service time slot
+          currentStartTime = slotEndTime;
+        }
+
+        // ALL slots are available! Now create appointments
+        currentStartTime = appointmentStartTime;
+
+        for (let i = 0; i < services.length; i++) {
+          const service = services[i];
+          const slotEndTime = new Date(currentStartTime.getTime() + service.duration * 60000);
+
+          const newAppointment = await tx.appointment.create({
+            data: {
+              userId: userId as string,
+              serviceId: service.id,
+              teamMemberId,
+              startTime: currentStartTime,
+              endTime: slotEndTime,
+              status: 'PENDING',
+              notes: notes || null,
+            },
+            include: {
+              service: true,
+              teamMember: {
+                include: {
+                  user: {
+                    select: {
+                      fullName: true,
+                      username: true,
+                    },
+                  },
+                },
+              },
+              user: {
+                select: {
+                  fullName: true,
+                  email: true,
+                  phoneNumber: true,
+                },
+              },
+            },
+          });
+
+          createdAppointments.push(newAppointment);
+          currentStartTime = slotEndTime;
+        }
+
+        return createdAppointments;
+      },
+      {
+        isolationLevel: 'Serializable',
+        timeout: 15000,
+      }
+    );
+
+    res.status(201).json({
+      message: `Successfully booked ${appointments.length} service${appointments.length > 1 ? 's' : ''}`,
+      appointments,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
