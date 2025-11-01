@@ -29,6 +29,7 @@ const translations: Record<Language, Translations> = {
     'nav.login': 'Login',
     'nav.logout': 'Logout',
     'nav.dashboard': 'Dashboard',
+    'nav.myProfile': 'My Profile',
 
     // Hero
     'hero.badge': 'Luxury Beauty Experience',
@@ -228,6 +229,7 @@ const translations: Record<Language, Translations> = {
     'nav.login': 'Ingresar',
     'nav.logout': 'Cerrar Sesión',
     'nav.dashboard': 'Panel',
+    'nav.myProfile': 'Mi Perfil',
 
     // Hero
     'hero.badge': 'Experiencia de Belleza de Lujo',

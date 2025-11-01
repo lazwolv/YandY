@@ -237,18 +237,18 @@ export const BookingPage = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-purple/5 via-primary-100/10 to-purple/5 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-gray-900 via-gray-800 to-black py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="max-w-4xl mx-auto"
       >
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-white/10">
           {/* Header */}
-          <div className="bg-gradient-to-r from-purple to-purple-dark text-white px-8 py-12 text-center">
+          <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white px-8 py-12 text-center border-b border-white/10">
             <div className="flex justify-center mb-4">
-              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-full">
+              <div className="bg-white/10 backdrop-blur-sm p-4 rounded-full border border-white/20">
                 <Calendar className="w-12 h-12" />
               </div>
             </div>
@@ -257,40 +257,40 @@ export const BookingPage = () => {
           </div>
 
           {/* Progress Steps */}
-          <div className="bg-gray-50 px-8 py-4 border-b border-gray-200">
+          <div className="bg-white/5 px-8 py-4 border-b border-white/10">
             <div className="flex items-center justify-between max-w-2xl mx-auto">
               <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isStep1Complete ? 'bg-purple text-white' : 'bg-gray-300 text-gray-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${isStep1Complete ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/50 border-white/10'}`}>
                   {isStep1Complete ? <Check className="w-5 h-5" /> : '1'}
                 </div>
-                <span className={`text-sm font-medium ${isStep1Complete ? 'text-purple' : 'text-gray-600'}`}>Employee</span>
+                <span className={`text-sm font-medium ${isStep1Complete ? 'text-white' : 'text-white/50'}`}>Employee</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-white/30" />
               <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isStep2Complete ? 'bg-purple text-white' : 'bg-gray-300 text-gray-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${isStep2Complete ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/50 border-white/10'}`}>
                   {isStep2Complete ? <Check className="w-5 h-5" /> : '2'}
                 </div>
-                <span className={`text-sm font-medium ${isStep2Complete ? 'text-purple' : 'text-gray-600'}`}>Services</span>
+                <span className={`text-sm font-medium ${isStep2Complete ? 'text-white' : 'text-white/50'}`}>Services</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-white/30" />
               <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isStep3Complete ? 'bg-purple text-white' : 'bg-gray-300 text-gray-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${isStep3Complete ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/50 border-white/10'}`}>
                   {isStep3Complete ? <Check className="w-5 h-5" /> : '3'}
                 </div>
-                <span className={`text-sm font-medium ${isStep3Complete ? 'text-purple' : 'text-gray-600'}`}>Date</span>
+                <span className={`text-sm font-medium ${isStep3Complete ? 'text-white' : 'text-white/50'}`}>Date</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-white/30" />
               <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isStep4Complete ? 'bg-purple text-white' : 'bg-gray-300 text-gray-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${isStep4Complete ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/50 border-white/10'}`}>
                   {isStep4Complete ? <Check className="w-5 h-5" /> : '4'}
                 </div>
-                <span className={`text-sm font-medium ${isStep4Complete ? 'text-purple' : 'text-gray-600'}`}>Time</span>
+                <span className={`text-sm font-medium ${isStep4Complete ? 'text-white' : 'text-white/50'}`}>Time</span>
               </div>
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+          <form onSubmit={handleSubmit} className="p-8 space-y-8 bg-transparent">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg flex items-start gap-2">
                 <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -300,7 +300,7 @@ export const BookingPage = () => {
 
             {/* STEP 1: Team Member Selection */}
             <div>
-              <h2 className="text-2xl font-bold text-purple mb-4 flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <Users className="w-6 h-6" />
                 Step 1: Choose Your Nail Technician
               </h2>
@@ -308,10 +308,10 @@ export const BookingPage = () => {
               {isLoadingTeamMembers ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">Loading team members...</p>
+                  <p className="mt-2 text-white/70">Loading team members...</p>
                 </div>
               ) : teamMembers.length === 0 ? (
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+                <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-lg">
                   No team members available at this time. Please try again later.
                 </div>
               ) : (
@@ -330,8 +330,8 @@ export const BookingPage = () => {
                       }}
                       className={`cursor-pointer border-2 rounded-lg p-4 transition-all ${
                         selectedTeamMember === member.id
-                          ? 'border-primary-500 bg-primary-50 shadow-md'
-                          : 'border-gray-200 hover:border-primary-300 hover:shadow-sm'
+                          ? 'border-white/30 bg-white/10 shadow-md'
+                          : 'border-white/10 hover:border-white/20 hover:bg-white/5'
                       }`}
                       role="button"
                       tabIndex={0}
@@ -353,10 +353,10 @@ export const BookingPage = () => {
                             <img
                               src={member.imageUrl}
                               alt={member.user.fullName}
-                              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                              className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
                             />
                           ) : (
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple to-primary-500 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-white/10 to-white/5 border border-white/20 flex items-center justify-center">
                               <span className="text-white text-xl font-bold">
                                 {member.user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2)}
                               </span>
@@ -366,14 +366,14 @@ export const BookingPage = () => {
 
                         {/* Member Info */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 text-lg">
+                          <h3 className="font-semibold text-white text-lg">
                             {member.user.fullName}
                           </h3>
-                          <p className="text-sm text-primary-600 font-medium mt-1">
+                          <p className="text-sm text-white/80 font-medium mt-1">
                             {member.specialty}
                           </p>
                           {member.bio && (
-                            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                            <p className="text-sm text-white/70 mt-2 line-clamp-2">
                               {member.bio}
                             </p>
                           )}
@@ -382,8 +382,8 @@ export const BookingPage = () => {
                         {/* Selection Indicator */}
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                           selectedTeamMember === member.id
-                            ? 'border-primary-500 bg-primary-500'
-                            : 'border-gray-300'
+                            ? 'border-white/50 bg-white/20'
+                            : 'border-white/30'
                         }`}>
                           {selectedTeamMember === member.id && (
                             <Check className="w-4 h-4 text-white" />
@@ -403,10 +403,10 @@ export const BookingPage = () => {
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-2xl font-bold text-purple mb-4">
+                <h2 className="text-2xl font-bold text-white mb-4">
                   Step 2: Select Services
                   {selectedServices.length > 0 && (
-                    <span className="text-sm font-normal text-gray-600 ml-2">
+                    <span className="text-sm font-normal text-white/70 ml-2">
                       ({selectedServices.length} selected)
                     </span>
                   )}
@@ -415,10 +415,10 @@ export const BookingPage = () => {
                 {isLoadingServices ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Loading services...</p>
+                    <p className="mt-2 text-white/70">Loading services...</p>
                   </div>
                 ) : services.length === 0 ? (
-                  <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-lg">
                     No services available at this time. Please try again later.
                   </div>
                 ) : (
@@ -438,19 +438,19 @@ export const BookingPage = () => {
                             onClick={() => toggleService(service.id)}
                             className={`cursor-pointer border-2 rounded-lg p-4 transition-all ${
                               selectedServices.includes(service.id)
-                                ? 'border-primary-500 bg-primary-50'
-                                : 'border-gray-200 hover:border-primary-300'
+                                ? 'border-white/30 bg-white/10'
+                                : 'border-white/10 hover:border-white/20 hover:bg-white/5'
                             }`}
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900">
+                                <h3 className="font-semibold text-white">
                                   {service.name || 'Unnamed Service'}
                                 </h3>
                                 {service.description && (
-                                  <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                                  <p className="text-sm text-white/70 mt-1">{service.description}</p>
                                 )}
-                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-700">
+                                <div className="flex items-center gap-4 mt-2 text-sm text-white/80">
                                   <span className="font-medium">
                                     ${Number(service.price).toFixed(2)}
                                   </span>
@@ -460,8 +460,8 @@ export const BookingPage = () => {
                               </div>
                               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                                 selectedServices.includes(service.id)
-                                  ? 'border-primary-500 bg-primary-500'
-                                  : 'border-gray-300'
+                                  ? 'border-white/50 bg-white/20'
+                                  : 'border-white/30'
                               }`}>
                                 {selectedServices.includes(service.id) && (
                                   <Check className="w-4 h-4 text-white" />
@@ -474,14 +474,14 @@ export const BookingPage = () => {
                     </div>
 
                     {selectedServices.length > 0 && (
-                      <div className="mt-4 bg-primary-50 border border-primary-200 rounded-lg p-4">
+                      <div className="mt-4 bg-white/10 border border-white/20 rounded-lg p-4">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium text-gray-700">Total Duration:</span>
-                          <span className="text-primary-700 font-bold">{getTotalDuration()} minutes</span>
+                          <span className="font-medium text-white/90">Total Duration:</span>
+                          <span className="text-white font-bold">{getTotalDuration()} minutes</span>
                         </div>
                         <div className="flex items-center justify-between text-sm mt-2">
-                          <span className="font-medium text-gray-700">Total Price:</span>
-                          <span className="text-primary-700 font-bold text-lg">${getTotalPrice().toFixed(2)}</span>
+                          <span className="font-medium text-white/90">Total Price:</span>
+                          <span className="text-white font-bold text-lg">${getTotalPrice().toFixed(2)}</span>
                         </div>
                       </div>
                     )}
@@ -497,14 +497,14 @@ export const BookingPage = () => {
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-2xl font-bold text-purple mb-4">Step 3: Select Date</h2>
+                <h2 className="text-2xl font-bold text-white mb-4">Step 3: Select Date</h2>
                 <div className="relative max-w-md">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
                   <input
                     type="date"
                     required
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all"
                     value={selectedDate}
                     onChange={(e) => {
                       setSelectedDate(e.target.value);
@@ -522,12 +522,12 @@ export const BookingPage = () => {
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-2xl font-bold text-purple mb-4">
+                <h2 className="text-2xl font-bold text-white mb-4">
                   Step 4: Select Time Slot
                 </h2>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-blue-800">
+                <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-white/90">
                     <strong>Looking for {getTotalDuration()}-minute slots</strong> with {getSelectedTeamMemberName()} on{' '}
                     {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
                       weekday: 'long',
@@ -540,10 +540,10 @@ export const BookingPage = () => {
                 {isLoadingSlots ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Finding available slots...</p>
+                    <p className="mt-2 text-white/70">Finding available slots...</p>
                   </div>
                 ) : availableSlots.length === 0 ? (
-                  <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-lg">
                     No {getTotalDuration()}-minute slots available on this day. Try selecting a different date.
                   </div>
                 ) : (
@@ -557,8 +557,8 @@ export const BookingPage = () => {
                         onClick={() => setSelectedSlot(slot.time)}
                         className={`p-3 rounded-lg border-2 transition-all text-center ${
                           selectedSlot === slot.time
-                            ? 'border-primary-500 bg-primary-500 text-white shadow-md'
-                            : 'border-gray-200 hover:border-primary-300 bg-white text-gray-900'
+                            ? 'border-white/30 bg-white/20 text-white shadow-md'
+                            : 'border-white/20 hover:border-white/30 bg-white/5 text-white'
                         }`}
                       >
                         <div className="flex items-center justify-center gap-1 mb-1">
@@ -582,15 +582,15 @@ export const BookingPage = () => {
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.3 }}
               >
-                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="notes" className="block text-sm font-medium text-white/90 mb-1">
                   Additional Notes (optional)
                 </label>
                 <div className="relative">
-                  <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-white/50" />
                   <textarea
                     id="notes"
                     rows={4}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all placeholder:text-white/40"
                     placeholder="Any special requests or preferences..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
@@ -605,7 +605,7 @@ export const BookingPage = () => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isSubmitting || !isStep4Complete}
-              className="w-full bg-gradient-to-r from-purple to-purple-dark text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-white/10 text-white font-bold py-4 rounded-lg border border-white/20 hover:bg-white/15 hover:border-white/30 shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting
                 ? 'Creating Appointment...'
@@ -613,7 +613,7 @@ export const BookingPage = () => {
               }
             </motion.button>
 
-            <p className="text-sm text-gray-500 text-center">
+            <p className="text-sm text-white/70 text-center">
               * You'll receive an SMS confirmation once your appointment is confirmed
             </p>
           </form>
