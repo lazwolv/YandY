@@ -5,7 +5,12 @@ import { Calendar, Clock, Users, TrendingUp, Settings, Bell, CheckCircle, XCircl
 import { ScheduleManager } from '../components/ScheduleManager';
 
 // Helper to parse datetime strings from backend without timezone conversion
-const parseLocalDateTime = (dateTimeString: string): Date => {
+const parseLocalDateTime = (dateTimeString: string | undefined): Date => {
+  // Handle undefined/null values
+  if (!dateTimeString) {
+    return new Date();
+  }
+
   const isoString = dateTimeString.replace(' ', 'T');
   const [datePart, timePart] = isoString.split('T');
   const [year, month, day] = datePart.split('-').map(Number);
