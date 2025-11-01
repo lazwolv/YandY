@@ -219,7 +219,7 @@ export const EmployeeDashboardPage = () => {
                         <div key={apt.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-white">{apt.user.fullName}</h3>
+                              <h3 className="font-semibold text-white">{apt.user?.fullName}</h3>
                               <p className="text-sm text-white/70">{apt.service.name}</p>
                             </div>
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.color}`}>
@@ -236,7 +236,7 @@ export const EmployeeDashboardPage = () => {
                             <span className="font-medium text-white">${Number(apt.service.price).toFixed(2)}</span>
                           </div>
                           <div className="mt-2 text-sm text-white/70">
-                            <span className="font-medium">Phone:</span> {apt.user.phoneNumber}
+                            <span className="font-medium">Phone:</span> {apt.user?.phoneNumber}
                           </div>
                           {apt.reminderSent && (
                             <div className="mt-2 flex items-center text-xs text-green-600">
@@ -282,7 +282,7 @@ export const EmployeeDashboardPage = () => {
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <h4 className="font-medium text-white">{apt.user.fullName}</h4>
+                                <h4 className="font-medium text-white">{apt.user?.fullName}</h4>
                                 <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${badge.color}`}>
                                   <StatusIcon className="h-3 w-3 mr-0.5" />
                                   {badge.text}

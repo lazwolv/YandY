@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useAuthStore } from '../../store/authStore';
 
 /**
@@ -119,13 +119,13 @@ describe('useAuthStore Hook Tests', () => {
       act(() => {
         useAuthStore.setState({
           user: {
-            userId: 'test-id',
+            id: 'test-id',
             email: 'test@example.com',
             username: 'testuser',
             fullName: 'Test User',
             role: 'CUSTOMER',
             phoneNumber: '+1234567890',
-            isVerified: true,
+            points: 0,
             createdAt: new Date().toISOString(),
           },
           isAuthenticated: true,
@@ -196,17 +196,17 @@ describe('useAuthStore Hook Tests', () => {
 
   describe('Safe useEffect Usage Pattern', () => {
     test('demonstrates correct way to use loadUser in useEffect', async () => {
-      // Mock successful API response
-      const mockUser = {
-        userId: 'test-id',
-        email: 'test@example.com',
-        username: 'testuser',
-        fullName: 'Test User',
-        role: 'CUSTOMER' as const,
-        phoneNumber: '+1234567890',
-        isVerified: true,
-        createdAt: new Date().toISOString(),
-      };
+      // Mock successful API response - not used in this test
+      // const mockUser = {
+      //   id: 'test-id',
+      //   email: 'test@example.com',
+      //   username: 'testuser',
+      //   fullName: 'Test User',
+      //   role: 'CUSTOMER' as const,
+      //   phoneNumber: '+1234567890',
+      //   points: 0,
+      //   createdAt: new Date().toISOString(),
+      // };
 
       // Simulate component with useEffect
       let renderCount = 0;
@@ -259,7 +259,7 @@ describe('useAuthStore Hook Tests', () => {
     test('using selectors prevents unnecessary rerenders', () => {
       let renderCount = 0;
 
-      const { result, rerender } = renderHook(() => {
+      const { rerender } = renderHook(() => {
         renderCount++;
         return useAuthStore(state => state.user);
       });
@@ -328,7 +328,7 @@ describe('useAuthStore Hook Tests', () => {
       const { result } = renderHook(() => useAuthStore());
 
       const loginPromise = result.current
-        .login({ username: 'test', password: 'Test123!@#' })
+        .login({ emailOrUsername: 'test', password: 'Test123!@#' })
         .catch(() => {});
 
       const loadUserPromise = result.current.loadUser().catch(() => {});
@@ -407,7 +407,7 @@ describe('useAuthStore Hook Tests', () => {
     test('state updates do not trigger cascading rerenders', () => {
       let renderCount = 0;
 
-      const { result } = renderHook(() => {
+      renderHook(() => {
         renderCount++;
         return useAuthStore();
       });
@@ -465,8 +465,8 @@ describe('useAuthStore Hook Tests', () => {
       // Simulate multiple renders (like scrolling, etc.)
       for (let i = 0; i < 50; i++) {
         // Access properties multiple times
-        const _ = result.current.user;
-        const __ = result.current.loadUser;
+        result.current.user;
+        result.current.loadUser;
       }
 
       // Should not crash or cause memory issues

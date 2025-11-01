@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, Calendar, Plus, Trash2, Check, AlertCircle } from 'lucide-react';
+import { X, Clock, Calendar, Plus, Check, AlertCircle } from 'lucide-react';
 import { availabilityApi, Availability } from '../api/availability';
 
 interface ScheduleManagerProps {

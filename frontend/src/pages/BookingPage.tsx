@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, Phone, MessageSquare, Check, Users, ChevronRight, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, MessageSquare, Check, Users, ChevronRight, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { servicesApi, Service } from '../api/services';
 import { teamMembersApi, TeamMember } from '../api/teamMembers';
@@ -189,7 +189,6 @@ export const BookingPage = () => {
       // Parse date correctly to avoid timezone issues
       // selectedDate format: "YYYY-MM-DD"
       const [year, month, day] = selectedDate.split('-').map(Number);
-      const appointmentDate = new Date(year, month - 1, day, hour24, minutes, 0, 0);
 
       // Format as ISO string WITHOUT timezone conversion
       // Format: YYYY-MM-DDTHH:MM:SS (no Z suffix)
