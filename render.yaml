@@ -7,7 +7,7 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: chmod +x scripts/migrate-with-recovery.sh && ./scripts/migrate-with-recovery.sh && npm run prisma:seed && npm start
+    startCommand: chmod +x scripts/reset-render-db.sh && ./scripts/reset-render-db.sh && npm run prisma:seed && npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
