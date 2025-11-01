@@ -7,7 +7,12 @@ import { authApi } from '../api/auth';
 import { useLanguage } from '../contexts/LanguageContext';
 
 // Helper to parse datetime strings from backend without timezone conversion
-const parseLocalDateTime = (dateTimeString: string): Date => {
+const parseLocalDateTime = (dateTimeString: string | undefined): Date => {
+  // Handle undefined/null values
+  if (!dateTimeString) {
+    return new Date();
+  }
+
   // Backend returns: "2025-11-03 09:00:00" or "2025-11-03T09:00:00"
   // Replace space with T for ISO format, then parse component-by-component
   const isoString = dateTimeString.replace(' ', 'T');
