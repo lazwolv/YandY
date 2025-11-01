@@ -9,6 +9,7 @@ interface Translations {
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
+  changeLanguage: (lang: string) => void; // Accepts lowercase 'en' or 'es'
   t: (key: string) => string;
 }
 
@@ -431,12 +432,20 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('preferredLanguage', lang);
   };
 
+  // Helper to convert lowercase API format to uppercase internal format
+  const changeLanguage = (lang: string) => {
+    const upperLang = lang.toUpperCase() as Language;
+    if (upperLang === 'EN' || upperLang === 'ES') {
+      setLanguage(upperLang);
+    }
+  };
+
   const t = (key: string): string => {
     return translations[language][key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, changeLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

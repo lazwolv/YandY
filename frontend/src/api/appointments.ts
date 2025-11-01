@@ -110,4 +110,15 @@ export const appointmentsApi = {
     const response = await apiClient.get('/appointments/employee/dashboard');
     return response.data;
   },
+
+  // Create bulk appointment (atomic booking for multiple services)
+  createBulkAppointment: async (data: {
+    teamMemberId: string;
+    serviceIds: string[];
+    startTime: string;
+    notes?: string;
+  }): Promise<{ message: string; appointments: Appointment[] }> => {
+    const response = await apiClient.post('/appointments/bulk', data);
+    return response.data;
+  },
 };

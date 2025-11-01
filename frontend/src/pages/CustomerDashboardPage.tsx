@@ -6,6 +6,17 @@ import { appointmentsApi, Appointment } from '../api/appointments';
 import { authApi } from '../api/auth';
 import { useLanguage } from '../contexts/LanguageContext';
 
+// Helper to parse datetime strings from backend without timezone conversion
+const parseLocalDateTime = (dateTimeString: string): Date => {
+  // Backend returns: "2025-11-03 09:00:00" or "2025-11-03T09:00:00"
+  // Replace space with T for ISO format, then parse component-by-component
+  const isoString = dateTimeString.replace(' ', 'T');
+  const [datePart, timePart] = isoString.split('T');
+  const [year, month, day] = datePart.split('-').map(Number);
+  const [hour, minute, second] = timePart.split(':').map(Number);
+  return new Date(year, month - 1, day, hour, minute, second || 0);
+};
+
 export const CustomerDashboardPage = () => {
   const { user, setUser } = useAuthStore();
   const { changeLanguage, language } = useLanguage();
@@ -16,6 +27,14 @@ export const CustomerDashboardPage = () => {
 
   // This component is only rendered by DashboardPage which is already protected
   // User data is guaranteed to be loaded by ProtectedRoute
+
+  // Sync language preference on mount
+  useEffect(() => {
+    if (user?.languagePreference) {
+      changeLanguage(user.languagePreference);
+    }
+  }, [user?.languagePreference, changeLanguage]);
+
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -35,7 +54,7 @@ export const CustomerDashboardPage = () => {
   }, [user]);
 
   const upcomingAppointments = appointments.filter(
-    apt => new Date(apt.startTime) >= new Date() && apt.status !== 'CANCELLED' && apt.status !== 'COMPLETED'
+    apt => parseLocalDateTime(apt.startTime) >= new Date() && apt.status !== 'CANCELLED' && apt.status !== 'COMPLETED'
   );
 
   const pastAppointments = appointments.filter(
@@ -47,14 +66,19 @@ export const CustomerDashboardPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-white/70">Loading...</p>
         </div>
       </div>
     );
   }
 
   const firstName = user.fullName.split(' ')[0];
-  const memberSinceYear = new Date(user.createdAt).getFullYear();
+  const memberSinceYear = parseLocalDateTime(user.createdAt).getFullYear();
+
+  // Format username: remove country code (1) from phone number username
+  const displayUsername = user.username.startsWith('1') && user.username.length === 11
+    ? user.username.substring(1)
+    : user.username;
 
   const handleReschedule = (appointmentId: string) => {
     // Navigate to booking page with appointment ID to reschedule
@@ -99,47 +123,59 @@ export const CustomerDashboardPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple/5 via-white to-pink/5 pt-24 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header - Modern gradient card */}
-        <div className="mb-8 bg-gradient-to-r from-purple to-purple-dark rounded-2xl shadow-2xl p-8 text-white">
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black pt-24 pb-12 overflow-hidden">
+      {/* Animated gradient overlay with purple accent */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-pink/10 pointer-events-none" />
+
+      {/* Sparkle effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-2 h-2 bg-pink rounded-full animate-pulse opacity-60" />
+        <div className="absolute top-40 right-20 w-1 h-1 bg-purple rounded-full animate-pulse opacity-40" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-60 left-1/3 w-1.5 h-1.5 bg-pink-light rounded-full animate-pulse opacity-50" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-40 right-1/4 w-2 h-2 bg-purple-light rounded-full animate-pulse opacity-60" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/3 right-10 w-1 h-1 bg-pink rounded-full animate-pulse opacity-40" style={{ animationDelay: '0.5s' }} />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header - Dark theme card */}
+        <div className="mb-8 bg-gradient-to-r from-purple/30 via-purple-dark/30 to-black/50 backdrop-blur-xl rounded-2xl shadow-2xl p-8 text-white relative border border-purple/20">
+          {/* Language Selector - Top Right, moved left to avoid overlap */}
+          <div className="absolute top-4 right-32 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
+            <Globe className="h-4 w-4" />
+            <select
+              value={language.toLowerCase()}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="bg-transparent border-none outline-none cursor-pointer text-sm font-medium"
+            >
+              <option value="en" className="text-white">English</option>
+              <option value="es" className="text-white">Español</option>
+            </select>
+          </div>
+
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <div className="flex items-start justify-between mb-4">
-                <h1 className="text-4xl font-bold">Welcome back, {firstName}! 👋</h1>
-                {/* Language Selector */}
-                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
-                  <Globe className="h-4 w-4" />
-                  <select
-                    value={language}
-                    onChange={(e) => handleLanguageChange(e.target.value)}
-                    className="bg-transparent border-none outline-none cursor-pointer text-sm font-medium"
-                  >
-                    <option value="en" className="text-gray-900">English</option>
-                    <option value="es" className="text-gray-900">Español</option>
-                  </select>
-                </div>
-              </div>
-              <p className="text-white/90 text-lg mb-4">Manage your appointments, photos, and rewards</p>
+              <h1 className="text-4xl font-bold mb-4">Welcome back, {firstName}! 👋</h1>
+              <p className="text-white/80 text-lg mb-4">Manage your appointments, photos, and rewards</p>
               <div className="flex flex-wrap gap-4 text-sm">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-white/90">
                   <User className="h-4 w-4" />
                   <span>{user.fullName}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span>@{user.username}</span>
+                <div className="flex items-center gap-2 text-white/90">
+                  <span>{displayUsername}</span>
                 </div>
-                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">
+                <div className="bg-white/10 px-3 py-1 rounded-full text-xs font-medium border border-white/20">
                   Customer
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-white/90">
                   <Award className="h-4 w-4" />
                   <span>Member Since {memberSinceYear}</span>
                 </div>
               </div>
             </div>
-            <div className="hidden lg:block">
-              <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center">
+            {/* User Avatar Circle - Lowered and visible on all screens */}
+            <div className="ml-8 flex-shrink-0 self-end mb-2">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink/30 to-purple/30 backdrop-blur-sm border-4 border-white/20 shadow-2xl shadow-purple/50 flex items-center justify-center">
                 <span className="text-5xl font-bold">{firstName.charAt(0).toUpperCase()}</span>
               </div>
             </div>
@@ -148,50 +184,50 @@ export const CustomerDashboardPage = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/10 p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Calendar className="h-8 w-8 text-primary-500" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900">{upcomingAppointments.length}</p>
+                <p className="text-sm font-medium text-white/70">Upcoming</p>
+                <p className="text-2xl font-bold text-white">{upcomingAppointments.length}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/10 p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Clock className="h-8 w-8 text-primary-500" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Past Visits</p>
-                <p className="text-2xl font-bold text-gray-900">{pastAppointments.length}</p>
+                <p className="text-sm font-medium text-white/70">Past Visits</p>
+                <p className="text-2xl font-bold text-white">{pastAppointments.length}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/10 p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Award className="h-8 w-8 text-primary-500" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Points</p>
-                <p className="text-2xl font-bold text-gray-900">{user.points}</p>
+                <p className="text-sm font-medium text-white/70">Points</p>
+                <p className="text-2xl font-bold text-white">{user.points}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/10 p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Star className="h-8 w-8 text-primary-500" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Photo Votes</p>
-                <p className="text-2xl font-bold text-gray-900">0</p>
+                <p className="text-sm font-medium text-white/70">Photo Votes</p>
+                <p className="text-2xl font-bold text-white">0</p>
               </div>
             </div>
           </div>
@@ -200,20 +236,20 @@ export const CustomerDashboardPage = () => {
         {/* Main Content */}
         <div className="space-y-6">
             {/* Upcoming Appointments */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/10">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Upcoming Appointments</h2>
+                <h2 className="text-lg font-semibold text-white">Upcoming Appointments</h2>
               </div>
               <div className="p-6">
                 {isLoading ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading appointments...</p>
+                    <p className="text-white/70">Loading appointments...</p>
                   </div>
                 ) : upcomingAppointments.length === 0 ? (
                   <div className="text-center py-12">
                     <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No upcoming appointments</p>
+                    <p className="text-white/70">No upcoming appointments</p>
                     <button
                       onClick={() => navigate('/booking')}
                       className="mt-4 btn btn-primary"
@@ -230,15 +266,15 @@ export const CustomerDashboardPage = () => {
                       >
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{apt.service.name}</h3>
-                            <div className="mt-2 space-y-1 text-sm text-gray-600">
+                            <h3 className="font-semibold text-white">{apt.service.name}</h3>
+                            <div className="mt-2 space-y-1 text-sm text-white/70">
                               <div className="flex items-center">
                                 <Calendar className="h-4 w-4 mr-2" />
-                                {new Date(apt.startTime).toLocaleDateString()}
+                                {parseLocalDateTime(apt.startTime).toLocaleDateString()}
                               </div>
                               <div className="flex items-center">
                                 <Clock className="h-4 w-4 mr-2" />
-                                {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {parseLocalDateTime(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </div>
                               {apt.teamMember && (
                                 <div className="flex items-center">
@@ -248,7 +284,7 @@ export const CustomerDashboardPage = () => {
                               )}
                             </div>
                             {apt.notes && (
-                              <p className="mt-2 text-sm text-gray-600">Note: {apt.notes}</p>
+                              <p className="mt-2 text-sm text-white/70">Note: {apt.notes}</p>
                             )}
                           </div>
                           <div className="ml-4">
@@ -294,7 +330,7 @@ export const CustomerDashboardPage = () => {
           {/* My Photos */}
           <div className="bg-white rounded-lg shadow">
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">My Gallery</h2>
+              <h2 className="text-lg font-semibold text-white">My Gallery</h2>
               <button
                 onClick={() => navigate('/upload-photo')}
                 className="btn btn-outline btn-sm"
@@ -306,7 +342,7 @@ export const CustomerDashboardPage = () => {
             <div className="p-6">
               <div className="text-center py-12">
                 <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No photos uploaded yet</p>
+                <p className="text-white/70">No photos uploaded yet</p>
                 <p className="text-sm text-gray-500 mt-2">
                   Share your amazing results and get votes!
                 </p>
