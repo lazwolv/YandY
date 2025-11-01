@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import request from 'supertest';
-import { app } from '../../app';
+import app from '../../app';
 import { testHelpers } from '../setup';
 import { prisma } from '../../config/database';
 
