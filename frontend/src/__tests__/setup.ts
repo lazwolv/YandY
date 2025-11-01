@@ -35,7 +35,7 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
+globalThis.IntersectionObserver = class IntersectionObserver {
   constructor() {}
   disconnect() {}
   observe() {}
@@ -46,7 +46,7 @@ global.IntersectionObserver = class IntersectionObserver {
 } as any;
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   constructor() {}
   disconnect() {}
   observe() {}
@@ -81,55 +81,7 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
   clip: vi.fn(),
 })) as any;
 
-// Mock WebGLRenderingContext for Three.js
-class WebGLRenderingContextMock {
-  canvas = document.createElement('canvas');
-  drawingBufferWidth = 800;
-  drawingBufferHeight = 600;
-  getExtension = vi.fn();
-  getParameter = vi.fn();
-  getContextAttributes = vi.fn(() => ({
-    alpha: true,
-    antialias: true,
-    depth: true,
-    failIfMajorPerformanceCaveat: false,
-    powerPreference: 'default',
-    premultipliedAlpha: true,
-    preserveDrawingBuffer: false,
-    stencil: false,
-    desynchronized: false,
-  }));
-  createBuffer = vi.fn();
-  createTexture = vi.fn();
-  createProgram = vi.fn();
-  createShader = vi.fn();
-  shaderSource = vi.fn();
-  compileShader = vi.fn();
-  attachShader = vi.fn();
-  linkProgram = vi.fn();
-  useProgram = vi.fn();
-  getProgramParameter = vi.fn(() => true);
-  getShaderParameter = vi.fn(() => true);
-  viewport = vi.fn();
-  clear = vi.fn();
-  clearColor = vi.fn();
-  enable = vi.fn();
-  disable = vi.fn();
-  depthFunc = vi.fn();
-  blendFunc = vi.fn();
-  getAttribLocation = vi.fn(() => 0);
-  getUniformLocation = vi.fn(() => ({}));
-  bindBuffer = vi.fn();
-  bufferData = vi.fn();
-  vertexAttribPointer = vi.fn();
-  enableVertexAttribArray = vi.fn();
-  drawArrays = vi.fn();
-  drawElements = vi.fn();
-  deleteShader = vi.fn();
-  deleteProgram = vi.fn();
-  deleteBuffer = vi.fn();
-  deleteTexture = vi.fn();
-}
+// Mock WebGLRenderingContext for Three.js (not used but kept for potential future use)
 
 // Mock localStorage
 const localStorageMock = {
@@ -140,7 +92,7 @@ const localStorageMock = {
   key: vi.fn(),
   length: 0,
 };
-global.localStorage = localStorageMock as any;
+globalThis.localStorage = localStorageMock as any;
 
 // Mock sessionStorage
 const sessionStorageMock = {
@@ -151,7 +103,7 @@ const sessionStorageMock = {
   key: vi.fn(),
   length: 0,
 };
-global.sessionStorage = sessionStorageMock as any;
+globalThis.sessionStorage = sessionStorageMock as any;
 
 // Mock navigator.language
 Object.defineProperty(window.navigator, 'language', {
@@ -160,12 +112,12 @@ Object.defineProperty(window.navigator, 'language', {
 });
 
 // Mock window.alert, confirm, prompt
-global.alert = vi.fn();
-global.confirm = vi.fn(() => true);
-global.prompt = vi.fn(() => '');
+globalThis.alert = vi.fn();
+globalThis.confirm = vi.fn(() => true);
+globalThis.prompt = vi.fn(() => '');
 
 // Mock scrollTo
-window.scrollTo = vi.fn();
+window.scrollTo = vi.fn() as any;
 
 // Mock console methods to reduce noise in tests
 const originalConsoleError = console.error;
