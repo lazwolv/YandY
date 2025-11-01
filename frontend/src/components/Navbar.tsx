@@ -256,53 +256,42 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-            />
-
-            {/* Menu Panel */}
+            {/* Menu Panel - Full Screen */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-80 bg-gradient-to-br from-purple via-purple-dark to-purple-dark z-50 lg:hidden shadow-2xl"
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black z-50 lg:hidden overflow-y-auto"
             >
-              <div className="p-8">
+              <div className="min-h-screen flex flex-col p-6">
                 {/* Close button */}
                 <div className="flex justify-end mb-8">
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-pink-light hover:bg-white/20 transition-colors"
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors"
                   >
-                    <X className="w-6 h-6" />
+                    <X className="w-7 h-7" />
                   </button>
                 </div>
 
                 {/* Logo */}
-                <div className="mb-12">
+                <div className="mb-10">
                   <img
                     src="/images/LOGO-DEF.png"
                     alt="Y&Y Beauty Salon"
                     className="h-16 w-auto mb-3"
                   />
-                  <h2 className="text-2xl font-bold text-pink-light">Y&Y Beauty Salon</h2>
-                  <p className="text-pink-light">Luxury Nail Care</p>
+                  <h2 className="text-xl font-bold text-white">Y&Y Beauty Salon</h2>
+                  <p className="text-white/70 text-sm">{t('common.luxuryNailCare')}</p>
                 </div>
 
-                {/* Preferences */}
-                {/* Only show language toggle if user is not logged in or doesn't have a preference set */}
-                {(!isAuthenticated || !user?.languagePreference) && (
+                {/* Language Switcher - Only show for guest users (not logged in) */}
+                {!isAuthenticated && (
                   <div className="mb-8">
-                    {/* Language Switcher */}
                     <button
                       onClick={toggleLanguage}
-                      className="w-full flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-pink-light font-semibold py-3 px-4 rounded-full hover:bg-white/20 transition-all"
+                      className="flex items-center gap-3 text-white/80 hover:text-white font-medium transition-colors text-lg"
                     >
                       <Globe className="w-5 h-5" />
                       <span>{language}</span>
@@ -311,36 +300,75 @@ const Navbar = () => {
                 )}
 
                 {/* Navigation Links */}
-                <nav className="space-y-4 mb-12">
-                  {navLinks.map((link, index) => (
-                    <motion.a
-                      key={index}
-                      href={link.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        scrollToSection(link.href);
+                <nav className="flex-1 space-y-0.5">
+                  {/* Authenticated User Options - Show at TOP */}
+                  {isAuthenticated && user && (
+                    <>
+                      <motion.button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          navigate('/dashboard');
+                        }}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0 }}
+                        className="block text-white hover:text-white/70 text-xl font-normal transition-colors py-2.5 w-full text-left"
+                      >
+                        {t('nav.myProfile')}
+                      </motion.button>
+                      <motion.button
+                        onClick={() => {
+                          handleLogout();
+                          setIsMobileMenuOpen(false);
+                        }}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 }}
+                        className="block text-white hover:text-white/70 text-xl font-normal transition-colors py-2.5 w-full text-left"
+                      >
+                        {t('nav.logout')}
+                      </motion.button>
+                    </>
+                  )}
+
+                  {/* Regular Navigation Links */}
+                  {navLinks.map((link, index) => {
+                    // Calculate delay based on whether user is authenticated
+                    const delayOffset = isAuthenticated ? 2 : 0;
+                    return (
+                      <motion.a
+                        key={index}
+                        href={link.href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          scrollToSection(link.href);
+                        }}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (index + delayOffset) * 0.05 }}
+                        className="block text-white hover:text-white/70 text-xl font-normal transition-colors py-2.5"
+                      >
+                        {t(link.labelKey)}
+                      </motion.a>
+                    );
+                  })}
+
+                  {/* Login Link for Non-Authenticated Users */}
+                  {!isAuthenticated && (
+                    <motion.button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        navigate('/login');
                       }}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ x: 10 }}
-                      className="block text-pink-light hover:text-pink text-xl font-semibold transition-colors py-2"
+                      transition={{ delay: navLinks.length * 0.05 }}
+                      className="block text-white hover:text-white/70 text-xl font-normal transition-colors py-2.5 w-full text-left"
                     >
-                      {t(link.labelKey)}
-                    </motion.a>
-                  ))}
+                      {t('nav.login')}
+                    </motion.button>
+                  )}
                 </nav>
-
-                {/* CTA Buttons */}
-                <div className="space-y-4">
-                  <button
-                    onClick={handleBooking}
-                    className="w-full bg-gradient-to-r from-pink to-pink-light text-purple-dark font-bold py-4 px-6 rounded-full shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2"
-                  >
-                    <Calendar className="w-5 h-5" />
-                    {t('hero.bookAppointment')}
-                  </button>
-                </div>
               </div>
             </motion.div>
           </>

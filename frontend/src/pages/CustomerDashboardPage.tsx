@@ -86,6 +86,10 @@ export const CustomerDashboardPage = () => {
     : user.username;
 
   const handleReschedule = (appointmentId: string) => {
+    // Confirm before rescheduling
+    if (!window.confirm('Are you sure you want to reschedule this appointment?')) {
+      return;
+    }
     // Navigate to booking page with appointment ID to reschedule
     navigate(`/booking?reschedule=${appointmentId}`);
   };
@@ -143,45 +147,99 @@ export const CustomerDashboardPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header - Dark theme card */}
-        <div className="mb-8 bg-gradient-to-r from-purple/30 via-purple-dark/30 to-black/50 backdrop-blur-xl rounded-2xl shadow-2xl p-8 text-white relative border border-purple/20">
-          {/* Language Selector - Top Right, moved left to avoid overlap */}
-          <div className="absolute top-4 right-32 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20">
-            <Globe className="h-4 w-4" />
-            <select
-              value={language.toLowerCase()}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              className="bg-transparent border-none outline-none cursor-pointer text-sm font-medium"
-            >
-              <option value="en" className="text-white">English</option>
-              <option value="es" className="text-white">Español</option>
-            </select>
+        <div className="mb-8 bg-gradient-to-r from-purple/30 via-purple-dark/30 to-black/50 backdrop-blur-xl rounded-2xl shadow-2xl p-6 text-white relative border border-purple/20">
+          {/* Mobile Layout: Stacked vertically */}
+          <div className="flex flex-col md:hidden gap-4">
+            {/* Welcome message and language selector row */}
+            <div className="flex items-center justify-between">
+              <h1 className="text-xl font-bold">Welcome back, {firstName}!</h1>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-white/20">
+                <Globe className="h-4 w-4" />
+                <select
+                  value={language.toLowerCase()}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="bg-transparent border-none outline-none cursor-pointer text-sm font-medium"
+                >
+                  <option value="en" className="text-gray-900">English</option>
+                  <option value="es" className="text-gray-900">Español</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Avatar and user info */}
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink/30 to-purple/30 backdrop-blur-sm border-4 border-white/20 shadow-2xl shadow-purple/50 flex items-center justify-center">
+                  <span className="text-3xl font-bold">{firstName.charAt(0).toUpperCase()}</span>
+                </div>
+              </div>
+
+              <div className="flex-1 min-w-0 space-y-2">
+                <div className="flex items-center gap-2 text-sm text-white/90">
+                  <User className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{user.fullName}</span>
+                </div>
+                <div className="text-sm text-white/90">
+                  {displayUsername}
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="bg-white/10 px-2.5 py-0.5 rounded-full text-xs font-medium border border-white/20">
+                    Customer
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-white/80">
+                    <Award className="h-3.5 w-3.5" />
+                    <span>Since {memberSinceYear}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-4">Welcome back, {firstName}! 👋</h1>
-              <p className="text-white/80 text-lg mb-4">Manage your appointments, photos, and rewards</p>
-              <div className="flex flex-wrap gap-4 text-sm">
+          {/* Desktop Layout: Horizontal */}
+          <div className="hidden md:flex items-center justify-between gap-6">
+            {/* User Avatar Circle */}
+            <div className="flex-shrink-0">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink/30 to-purple/30 backdrop-blur-sm border-4 border-white/20 shadow-2xl shadow-purple/50 flex items-center justify-center">
+                <span className="text-4xl font-bold">{firstName.charAt(0).toUpperCase()}</span>
+              </div>
+            </div>
+
+            {/* User Info */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl font-bold mb-3">Welcome back, {firstName}!</h1>
+              <div className="flex flex-wrap items-center gap-3 text-sm">
                 <div className="flex items-center gap-2 text-white/90">
                   <User className="h-4 w-4" />
-                  <span>{user.fullName}</span>
+                  <span className="truncate">{user.fullName}</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/90">
-                  <span>{displayUsername}</span>
+                <div className="text-white/70">•</div>
+                <div className="text-white/90">
+                  {displayUsername}
                 </div>
+                <div className="text-white/70">•</div>
                 <div className="bg-white/10 px-3 py-1 rounded-full text-xs font-medium border border-white/20">
                   Customer
                 </div>
+                <div className="text-white/70">•</div>
                 <div className="flex items-center gap-2 text-white/90">
                   <Award className="h-4 w-4" />
                   <span>Member Since {memberSinceYear}</span>
                 </div>
               </div>
             </div>
-            {/* User Avatar Circle - Lowered and visible on all screens */}
-            <div className="ml-8 flex-shrink-0 self-end mb-2">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pink/30 to-purple/30 backdrop-blur-sm border-4 border-white/20 shadow-2xl shadow-purple/50 flex items-center justify-center">
-                <span className="text-5xl font-bold">{firstName.charAt(0).toUpperCase()}</span>
+
+            {/* Language Selector */}
+            <div className="flex-shrink-0">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20 hover:bg-white/15 transition-colors">
+                <Globe className="h-4 w-4" />
+                <select
+                  value={language.toLowerCase()}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="bg-transparent border-none outline-none cursor-pointer text-sm font-medium"
+                >
+                  <option value="en" className="text-gray-900">English</option>
+                  <option value="es" className="text-gray-900">Español</option>
+                </select>
               </div>
             </div>
           </div>
@@ -257,7 +315,7 @@ export const CustomerDashboardPage = () => {
                     <p className="text-white/70">No upcoming appointments</p>
                     <button
                       onClick={() => navigate('/booking')}
-                      className="mt-4 btn btn-primary"
+                      className="mt-4 px-6 py-2.5 bg-white/10 text-white rounded-lg border border-white/30 hover:bg-white/15 hover:border-white/40 transition-all font-medium"
                     >
                       Book Appointment
                     </button>
@@ -302,10 +360,10 @@ export const CustomerDashboardPage = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="flex gap-3 pt-3 border-t border-gray-100">
+                        <div className="flex gap-3 pt-3 border-t border-white/10">
                           <button
                             onClick={() => handleReschedule(apt.id)}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-sm hover:shadow-md font-medium"
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 text-white/90 rounded-lg border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all font-medium"
                           >
                             <Edit className="h-4 w-4" />
                             Reschedule
@@ -313,7 +371,7 @@ export const CustomerDashboardPage = () => {
                           <button
                             onClick={() => handleCancel(apt.id)}
                             disabled={cancellingId === apt.id}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-sm hover:shadow-md font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 text-white/90 rounded-lg border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <X className="h-4 w-4" />
                             {cancellingId === apt.id ? 'Cancelling...' : 'Cancel'}
@@ -323,7 +381,7 @@ export const CustomerDashboardPage = () => {
                     ))}
                     <button
                       onClick={() => navigate('/booking')}
-                      className="w-full bg-primary-500 text-white hover:bg-primary-600 py-3 px-6 rounded-lg font-medium transition-colors"
+                      className="w-full bg-white/10 text-white border border-white/30 hover:bg-white/15 hover:border-white/40 py-3 px-6 rounded-lg font-medium transition-all"
                     >
                       Book Another Appointment
                     </button>
@@ -333,14 +391,14 @@ export const CustomerDashboardPage = () => {
             </div>
 
           {/* My Photos */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/10">
+            <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-white">My Gallery</h2>
               <button
                 onClick={() => navigate('/upload-photo')}
-                className="btn btn-outline btn-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white text-sm rounded-lg border border-white/20 hover:bg-white/15 hover:border-white/30 transition-all font-medium"
               >
-                <Image className="h-4 w-4 mr-2" />
+                <Image className="h-4 w-4" />
                 Upload Photo
               </button>
             </div>
