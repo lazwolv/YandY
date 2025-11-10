@@ -41,6 +41,7 @@ $RECYCLE.BIN/
 # IDE
 .vscode/
 .idea/
+.claude/
 *.sublime-project
 *.sublime-workspace
 
