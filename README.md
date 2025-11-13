@@ -1,5 +1,5 @@
 # Y&Y Beauty Salon - Quick Start (Solo Dev)
-
+https://aiaicaptain.ai/pages/main
 ## 🎯 What You Need to Know
 
 This is your beauty salon booking system. It's simple:
