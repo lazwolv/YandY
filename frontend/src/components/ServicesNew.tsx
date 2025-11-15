@@ -17,7 +17,7 @@ const ServicesNew = () => {
       description: t('services.luxuryManicure.desc'),
       features: [t('services.gelPolish'), t('services.nailArtFeature'), t('services.handMassage')],
       color: 'from-purple-light to-pink',
-      price: `${t('services.from')} $35`,
+      basePrice: 35,
     },
     {
       icon: Hand,
@@ -25,7 +25,7 @@ const ServicesNew = () => {
       description: t('services.deluxePedicure.desc'),
       features: [t('services.footSoak'), t('services.exfoliation'), t('services.massage')],
       color: 'from-purple-light to-pink',
-      price: `${t('services.from')} $45`,
+      basePrice: 45,
     },
     {
       icon: Palette,
@@ -33,7 +33,7 @@ const ServicesNew = () => {
       description: t('services.nailArt.desc'),
       features: [t('services.customDesigns'), t('services.3dArt'), t('services.ombre')],
       color: 'from-purple-light to-pink',
-      price: `${t('services.from')} $15`,
+      basePrice: 15,
     },
     {
       icon: Droplet,
@@ -41,7 +41,7 @@ const ServicesNew = () => {
       description: t('services.acrylicGel.desc'),
       features: [t('services.extensions'), t('services.refills'), t('services.sculpting')],
       color: 'from-purple-light to-pink',
-      price: `${t('services.from')} $50`,
+      basePrice: 50,
     },
     {
       icon: Scissors,
@@ -49,7 +49,7 @@ const ServicesNew = () => {
       description: t('services.waxing.desc'),
       features: [t('services.bodyWax'), t('services.facialWax'), t('services.gentleCare')],
       color: 'from-purple-light to-pink',
-      price: `${t('services.from')} $20`,
+      basePrice: 20,
     },
     {
       icon: Heart,
@@ -57,7 +57,7 @@ const ServicesNew = () => {
       description: t('services.spaPackages.desc'),
       features: [t('services.fullService'), t('services.relaxation'), t('services.vipTreatment')],
       color: 'from-purple-light to-pink',
-      price: `${t('services.from')} $80`,
+      basePrice: 80,
     },
   ];
 
@@ -151,20 +151,11 @@ const ServicesNew = () => {
                     ))}
                   </ul>
 
-                  {/* Price and CTA */}
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                    <span className="text-xl font-bold text-pink-light">
-                      ${Number(service.price).toFixed(2)}
+                  {/* Price */}
+                  <div className="pt-4 border-t border-white/10">
+                    <span className="text-xl font-bold text-white">
+                      {t('services.from')} ${service.basePrice.toFixed(2)}
                     </span>
-                    <button className="text-pink-light font-semibold hover:text-pink transition-colors flex items-center gap-1 group">
-                      {t('services.learnMore')}
-                      <motion.span
-                        animate={{ x: [0, 4, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      >
-                        →
-                      </motion.span>
-                    </button>
                   </div>
                 </div>
               </motion.div>

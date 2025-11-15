@@ -83,7 +83,7 @@ const HeroNew = () => {
           >
             <button
               onClick={() => navigate('/booking')}
-              className="group relative px-8 py-4 bg-gradient-to-r from-pink to-pink-light text-purple-dark font-bold text-lg rounded-full shadow-2xl hover:shadow-pink/50 transition-all duration-300 transform hover:scale-105 flex items-center gap-3"
+              className="group relative px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold text-lg rounded-lg hover:bg-white/20 hover:border-white/40 transition-all duration-300 shadow-xl flex items-center gap-3"
             >
               <Calendar className="w-5 h-5" />
               {t('hero.bookAppointment')}
@@ -92,7 +92,7 @@ const HeroNew = () => {
 
             <button
               onClick={scrollToServices}
-              className="px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold text-lg rounded-full hover:bg-white/20 hover:border-white/40 transition-all duration-300 transform hover:scale-105"
+              className="px-8 py-4 bg-white/5 backdrop-blur-md border border-white/20 text-white font-semibold text-lg rounded-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300"
             >
               {t('hero.viewServices')}
             </button>

@@ -152,15 +152,78 @@ const translations: Record<Language, Translations> = {
     'footer.closed': 'Closed',
     'footer.rights': 'All rights reserved',
 
-    // Booking Page
+    // Booking Page - Authentication
+    'booking.pleaseLogin': 'Please Login',
+    'booking.loginRequired': 'You need to be logged in to book an appointment',
+    'booking.goToLogin': 'Go to Login',
+
+    // Booking Page - Header
     'booking.title': 'Book Your Appointment',
+    'booking.hiUser': 'Hi {name}, let\'s find the perfect time for you',
+
+    // Booking Page - Progress Steps
+    'booking.step.employee': 'Nail tech',
+    'booking.step.services': 'Services',
+    'booking.step.time': 'Time',
+
+    // Booking Page - Step 1 (Team Member)
+    'booking.step1.title': 'Step 1: Choose Your Nail Technician',
+    'booking.loadingTeamMembers': 'Loading team members...',
+    'booking.noTeamMembers': 'No team members available at this time. Please try again later.',
+
+    // Booking Page - Step 2 (Services)
+    'booking.step2.title': 'Step 2: Select Services',
+    'booking.servicesSelected': '({count} selected)',
+    'booking.loadingServices': 'Loading services...',
+    'booking.noServices': 'No services available at this time. Please try again later.',
+    'booking.minutes': 'minutes',
+    'booking.min': 'min',
+
+    // Booking Page - Step 3 (Time Slots)
+    'booking.step3.title': 'Step 3: Select Time Slot',
+    'booking.lookingForSlots': 'Looking for {duration}-minute slots',
+    'booking.withEmployee': 'with {name}',
+    'booking.onDate': 'on {date}',
+    'booking.filterByDate': 'Filter by Date (optional)',
+    'booking.showAllDates': 'Show All Dates',
+    'booking.showingAllSlots': 'Showing all available slots for the next 7 days',
+    'booking.findingSlots': 'Finding available slots...',
+    'booking.checkingDate': 'Checking this date',
+    'booking.checkingDays': 'Checking the next 7 days',
+    'booking.noSlotsAvailable': 'No slots available',
+    'booking.noSlotsOnDay': 'No {duration}-minute slots available on this day. Try selecting a different date.',
+    'booking.noSlotsNext7Days': 'No {duration}-minute slots available in the next 7 days. Try selecting different services or check back later.',
+    'booking.slotCount': '({count} slot)',
+    'booking.slotCountPlural': '({count} slots)',
+    'booking.to': 'to',
+
+    // Booking Page - Date Formatting
+    'booking.date.today': 'Today',
+    'booking.date.tomorrow': 'Tomorrow',
+
+    // Booking Page - Additional Notes
+    'booking.additionalNotes': 'Additional Notes (optional)',
+
+    // Booking Page - Submit
+    'booking.creatingAppointment': 'Creating Appointment...',
+    'booking.bookServices': 'Book {count} Service with {name}',
+    'booking.bookServicesPlural': 'Book {count} Services with {name}',
+    'booking.smsConfirmation': '* You\'ll receive an SMS confirmation once your appointment is confirmed',
+
+    // Booking Page - Errors
+    'booking.error.selectTeamMember': 'Please select a team member',
+    'booking.error.selectService': 'Please select at least one service',
+    'booking.error.selectTimeSlot': 'Please select a time slot',
+    'booking.error.mustBeLoggedIn': 'You must be logged in to book an appointment',
+
+    // Booking Page - Legacy (kept for compatibility)
     'booking.selectService': 'Select Service(s)',
     'booking.selectMultiple': 'Select one or more services',
     'booking.selectDate': 'Select Date',
     'booking.selectTime': 'Select Time',
     'booking.chooseTime': 'Choose your preferred time slot',
     'booking.notes': 'Special Notes',
-    'booking.notesPlaceholder': 'Any special requests or preferences?',
+    'booking.notesPlaceholder': 'Any special requests or preferences...',
     'booking.totalDuration': 'Total Duration',
     'booking.totalPrice': 'Total Price',
     'booking.confirmBooking': 'Confirm Booking',
@@ -352,8 +415,72 @@ const translations: Record<Language, Translations> = {
     'footer.closed': 'Cerrado',
     'footer.rights': 'Todos los derechos reservados',
 
-    // Booking Page
+    // Booking Page - Authentication
+    'booking.pleaseLogin': 'Por favor, ingrese a su cuenta',
+    'booking.loginRequired': 'Necesita entrar a su cuenta para sacar una cita',
+    'booking.goToLogin': 'Ir a mi perfil',
+
+    // Booking Page - Header
     'booking.title': 'Reserva tu Cita',
+    'booking.hiUser': 'Hola {name}, busquemos el tiempo perfecto para ti',
+
+    // Booking Page - Progress Steps
+    'booking.step.employee': 'Técnica de uñas',
+    'booking.step.services': 'Servicios',
+    'booking.step.time': 'Tiempo',
+
+    // Booking Page - Step 1 (Team Member)
+    'booking.step1.title': 'Paso 1: Elija su técnica de uñas',
+    'booking.loadingTeamMembers': 'Cargando miembros del equipo...',
+    'booking.noTeamMembers': 'No hay miembros del equipo disponibles en este momento. Por favor, intente de nuevo más tarde.',
+
+    // Booking Page - Step 2 (Services)
+    'booking.step2.title': 'Paso 2: Seleccione Servicios',
+    'booking.servicesSelected': '({count} seleccionados)',
+    'booking.loadingServices': 'Cargando servicios...',
+    'booking.noServices': 'No hay servicios disponibles en este momento. Por favor, intente de nuevo más tarde.',
+    'booking.minutes': 'minutos',
+    'booking.min': 'min',
+
+    // Booking Page - Step 3 (Time Slots)
+    'booking.step3.title': 'Paso 3: Seleccione Hora',
+    'booking.lookingForSlots': 'Buscando espacios de {duration}-minutos',
+    'booking.withEmployee': 'con {name}',
+    'booking.onDate': 'el {date}',
+    'booking.filterByDate': 'Filtrar por fecha (optional)',
+    'booking.showAllDates': 'Mostrar Todas las Fechas',
+    'booking.showingAllSlots': 'Mostrando todas las fechas disponibles por los próximos 7 días.',
+    'booking.findingSlots': 'Buscando espacios disponibles...',
+    'booking.checkingDate': 'Chequeando esta fecha',
+    'booking.checkingDays': 'Chequeando los próximos 7 días',
+    'booking.noSlotsAvailable': 'No hay espacios disponibles',
+    'booking.noSlotsOnDay': 'No hay espacios de {duration}-minutos disponibles este día. Intente una fecha diferente.',
+    'booking.noSlotsNext7Days': 'No hay espacios de {duration}-minutos disponibles por los próximos 7 días. Inténtelo de nuevo más tarde.',
+    'booking.slotCount': '({count} espacio)',
+    'booking.slotCountPlural': '({count} espacios)',
+    'booking.to': 'a',
+
+    // Booking Page - Date Formatting
+    'booking.date.today': 'Hoy',
+    'booking.date.tomorrow': 'Mañana',
+
+    // Booking Page - Additional Notes
+    'booking.additionalNotes': 'Notas adicionales (opcional)',
+
+    // Booking Page - Submit
+    'booking.creatingAppointment': 'Creando Cita...',
+    'booking.bookServices': 'Reservar {count} Servicio con {name}',
+    'booking.bookServicesPlural': 'Reservar {count} Servicios con {name}',
+    'booking.smsConfirmation': '* Recibirá una confirmacion via texto una vez su cita sea confirmada',
+
+    // Booking Page - Errors
+    'booking.error.selectTeamMember': 'Por favor seleccione un miembro del equipo',
+    'booking.error.selectService': 'Por favor seleccione al menos un servicio',
+    'booking.error.selectTimeSlot': 'Por favor seleccione un horario',
+    'booking.error.mustBeLoggedIn': 'Necesita ingresar a su cuenta para reservar una cita',
+
+
+    // Booking Page - Legacy (kept for compatibility)
     'booking.selectService': 'Seleccionar Servicio(s)',
     'booking.selectMultiple': 'Selecciona uno o más servicios',
     'booking.selectDate': 'Seleccionar Fecha',

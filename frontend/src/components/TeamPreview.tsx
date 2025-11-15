@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useNavigate } from 'react-router-dom';
 import { Users, Star, Award } from 'lucide-react';
 
 const TeamPreview = () => {
+  const navigate = useNavigate();
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -10,34 +12,35 @@ const TeamPreview = () => {
 
   const team = [
     {
-      name: 'Sarah Johnson',
-      role: 'Master Nail Technician',
+      id: 'yaneidis-id', // You'll need to get the actual ID from database
+      name: 'Yaneidis Hidalgo',
+      role: 'Acrylic & Gel Specialist',
       image: '/images/Team/team 1.jpg',
-      specialty: 'Nail Art & Extensions',
+      specialty: 'Acrylic & Gel',
       experience: '8 Years',
     },
     {
-      name: 'Maria Garcia',
-      role: 'Senior Nail Artist',
+      id: 'yailex-id', // You'll need to get the actual ID from database
+      name: 'Yailex Hidalgo',
+      role: 'Nail Art Specialist',
       image: '/images/Team/team 2.jpg',
-      specialty: 'Gel & Acrylic',
+      specialty: 'Nail Art',
       experience: '6 Years',
     },
     {
-      name: 'Emily Chen',
-      role: 'Beauty Specialist',
+      id: 'diana-id', // You'll need to get the actual ID from database
+      name: 'Diana Laura Martinez',
+      role: 'Acrylic & Gel Specialist',
       image: '/images/Team/team 3.jpg',
-      specialty: 'Pedicure & Spa',
+      specialty: 'Acrylic & Gel',
       experience: '5 Years',
     },
-    {
-      name: 'Jessica Martinez',
-      role: 'Nail Technician',
-      image: '/images/Team/team 4.jpg',
-      specialty: 'Classic Manicure',
-      experience: '4 Years',
-    },
   ];
+
+  const handleBookWithMember = (memberId: string) => {
+    // Navigate to booking page with pre-selected team member
+    navigate(`/booking?teamMember=${memberId}`);
+  };
 
   return (
     <section className="py-24 bg-gradient-to-br from-gray-900 via-gray-800 to-black relative overflow-hidden">
@@ -66,7 +69,7 @@ const TeamPreview = () => {
         </motion.div>
 
         {/* Team grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {team.map((member, index) => (
             <motion.div
               key={index}
@@ -118,8 +121,11 @@ const TeamPreview = () => {
                     ))}
                   </div>
 
-                  {/* Book button */}
-                  <button className="w-full bg-gradient-to-r from-pink to-pink-light text-purple-dark font-bold py-3 rounded-full hover:from-pink-light hover:to-pink transition-all duration-300 transform group-hover:scale-105 shadow-lg">
+                  {/* Book button - Glassy style */}
+                  <button
+                    onClick={() => handleBookWithMember(member.id)}
+                    className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold py-3 rounded-lg hover:bg-white/15 hover:border-white/30 transition-all duration-300 shadow-lg"
+                  >
                     Book with {member.name.split(' ')[0]}
                   </button>
                 </div>
@@ -142,7 +148,10 @@ const TeamPreview = () => {
             <p className="text-white/90 text-lg mb-6">
               All our technicians are highly skilled. We'll match you with the perfect artist for your needs!
             </p>
-            <button className="bg-gradient-to-r from-pink to-pink-light text-purple-dark font-bold px-10 py-4 rounded-full shadow-xl hover:shadow-2xl hover:from-pink-light hover:to-pink transition-all duration-300 transform hover:scale-105">
+            <button
+              onClick={() => navigate('/booking')}
+              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-bold px-10 py-4 rounded-lg hover:bg-white/15 hover:border-white/30 transition-all duration-300 shadow-xl"
+            >
               Let Us Choose For You
             </button>
           </div>

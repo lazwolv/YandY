@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, MessageSquare, Check, Users, ChevronRight, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
@@ -8,14 +8,23 @@ import { teamMembersApi, TeamMember } from '../api/teamMembers';
 import { appointmentsApi } from '../api/appointments';
 import { availabilityApi, TimeSlot } from '../api/availability';
 
+// Type for grouped slots by date
+interface GroupedSlots {
+  date: string;
+  dateFormatted: string;
+  slots: TimeSlot[];
+}
+
 export const BookingPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, isAuthenticated } = useAuthStore();
 
   // Data loading states
   const [services, setServices] = useState<Service[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
+  const [groupedSlots, setGroupedSlots] = useState<GroupedSlots[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [isLoadingTeamMembers, setIsLoadingTeamMembers] = useState(true);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
@@ -24,8 +33,9 @@ export const BookingPage = () => {
   // Selection states (in order of new flow)
   const [selectedTeamMember, setSelectedTeamMember] = useState<string>('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>(''); // Now optional - used as filter
   const [selectedSlot, setSelectedSlot] = useState<string>('');
+  const [selectedSlotDate, setSelectedSlotDate] = useState<string>(''); // Track which date the selected slot belongs to
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
 
@@ -41,8 +51,13 @@ export const BookingPage = () => {
         setIsLoadingTeamMembers(true);
         const data = await teamMembersApi.getAllTeamMembers();
         setTeamMembers(data.teamMembers || []);
-        // Auto-select if only one team member
-        if (data.teamMembers.length === 1) {
+
+        // Check if team member is pre-selected via URL param
+        const preSelectedTeamMember = searchParams.get('teamMember');
+        if (preSelectedTeamMember) {
+          setSelectedTeamMember(preSelectedTeamMember);
+        } else if (data.teamMembers.length === 1) {
+          // Auto-select if only one team member
           setSelectedTeamMember(data.teamMembers[0].id);
         }
       } catch (error) {
@@ -54,7 +69,7 @@ export const BookingPage = () => {
     };
 
     fetchTeamMembers();
-  }, []);
+  }, [searchParams]);
 
   // Fetch services
   useEffect(() => {
@@ -74,11 +89,14 @@ export const BookingPage = () => {
     fetchServices();
   }, []);
 
-  // Fetch available slots when employee, services, and date are selected
+  // Fetch available slots when employee and services are selected
+  // Date is now optional - if not selected, fetch next 7 days
   useEffect(() => {
-    if (!selectedTeamMember || selectedServices.length === 0 || !selectedDate) {
+    if (!selectedTeamMember || selectedServices.length === 0) {
       setAvailableSlots([]);
+      setGroupedSlots([]);
       setSelectedSlot('');
+      setSelectedSlotDate('');
       return;
     }
 
@@ -88,22 +106,54 @@ export const BookingPage = () => {
         setError('');
 
         const totalDuration = getTotalDuration();
-        const data = await availabilityApi.getAvailableSlots(
-          selectedTeamMember,
-          selectedDate,
-          totalDuration
-        );
 
-        setAvailableSlots(data.slots || []);
-        setSelectedSlot(''); // Reset slot selection when slots change
+        // Determine which dates to fetch
+        const datesToFetch = selectedDate ? [selectedDate] : getNext7Days();
 
-        if (data.slots.length === 0 && data.message) {
-          setError(data.message);
+        // Fetch slots for all dates in parallel
+        const slotPromises = datesToFetch.map(async (date) => {
+          try {
+            const data = await availabilityApi.getAvailableSlots(
+              selectedTeamMember,
+              date,
+              totalDuration
+            );
+            return { date, slots: data.slots || [] };
+          } catch (error) {
+            console.error(`Failed to fetch slots for ${date}:`, error);
+            return { date, slots: [] };
+          }
+        });
+
+        const results = await Promise.all(slotPromises);
+
+        // Group slots by date with formatted headers
+        const grouped: GroupedSlots[] = results
+          .filter(({ slots }) => slots.length > 0) // Only include dates with available slots
+          .map(({ date, slots }) => ({
+            date,
+            dateFormatted: formatDateHeader(date),
+            slots,
+          }));
+
+        setGroupedSlots(grouped);
+
+        // Reset slot selection when slots change
+        setSelectedSlot('');
+        setSelectedSlotDate('');
+
+        // Show message if no slots available at all
+        if (grouped.length === 0) {
+          if (selectedDate) {
+            setError(`No ${totalDuration}-minute slots available on this day. Try selecting a different date.`);
+          } else {
+            setError(`No ${totalDuration}-minute slots available in the next 7 days. Try different services or check back later.`);
+          }
         }
       } catch (error: any) {
         console.error('Failed to fetch available slots:', error);
-        setError(error.response?.data?.error || 'Failed to load available time slots.');
-        setAvailableSlots([]);
+        setError('Failed to load available time slots. Please try again.');
+        setGroupedSlots([]);
       } finally {
         setIsLoadingSlots(false);
       }
@@ -119,9 +169,9 @@ export const BookingPage = () => {
         ? prev.filter(id => id !== serviceId)
         : [...prev, serviceId]
     );
-    // Reset date and slot when services change
-    setSelectedDate('');
+    // Reset slot when services change (slots will auto-refetch)
     setSelectedSlot('');
+    setSelectedSlotDate('');
   };
 
   // Helper: Calculate total duration from selected services
@@ -146,6 +196,56 @@ export const BookingPage = () => {
     return member?.user.fullName.split(' ')[0] || 'Employee';
   };
 
+  // Helper: Generate next 7 days (YYYY-MM-DD format)
+  const getNext7Days = (): string[] => {
+    const dates: string[] = [];
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      dates.push(`${year}-${month}-${day}`);
+    }
+
+    return dates;
+  };
+
+  // Helper: Format date for display (e.g., "Monday, November 15")
+  const formatDateHeader = (dateString: string): string => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(year, month - 1, day);
+    compareDate.setHours(0, 0, 0, 0);
+
+    if (compareDate.getTime() === today.getTime()) {
+      return 'Today, ' + date.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    if (compareDate.getTime() === tomorrow.getTime()) {
+      return 'Tomorrow, ' + date.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,12 +261,7 @@ export const BookingPage = () => {
       return;
     }
 
-    if (!selectedDate) {
-      setError('Please select a date');
-      return;
-    }
-
-    if (!selectedSlot) {
+    if (!selectedSlot || !selectedSlotDate) {
       setError('Please select a time slot');
       return;
     }
@@ -187,8 +282,8 @@ export const BookingPage = () => {
       if (period === 'AM' && hours === 12) hour24 = 0;
 
       // Parse date correctly to avoid timezone issues
-      // selectedDate format: "YYYY-MM-DD"
-      const [year, month, day] = selectedDate.split('-').map(Number);
+      // selectedSlotDate format: "YYYY-MM-DD"
+      const [year, month, day] = selectedSlotDate.split('-').map(Number);
 
       // Format as ISO string WITHOUT timezone conversion
       // Format: YYYY-MM-DDTHH:MM:SS (no Z suffix)
@@ -213,11 +308,10 @@ export const BookingPage = () => {
     }
   };
 
-  // Progressive disclosure: Calculate what steps are complete
+  // Progressive disclosure: Calculate what steps are complete (now 3 steps instead of 4)
   const isStep1Complete = selectedTeamMember !== '';
   const isStep2Complete = isStep1Complete && selectedServices.length > 0;
-  const isStep3Complete = isStep2Complete && selectedDate !== '';
-  const isStep4Complete = isStep3Complete && selectedSlot !== '';
+  const isStep3Complete = isStep2Complete && selectedSlot !== '' && selectedSlotDate !== '';
 
   if (!isAuthenticated || !user) {
     return (
@@ -258,7 +352,7 @@ export const BookingPage = () => {
 
           {/* Progress Steps */}
           <div className="bg-white/5 px-8 py-4 border-b border-white/10">
-            <div className="flex items-center justify-between max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-4 max-w-xl mx-auto">
               <div className="flex items-center gap-2">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${isStep1Complete ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/50 border-white/10'}`}>
                   {isStep1Complete ? <Check className="w-5 h-5" /> : '1'}
@@ -277,14 +371,7 @@ export const BookingPage = () => {
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${isStep3Complete ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/50 border-white/10'}`}>
                   {isStep3Complete ? <Check className="w-5 h-5" /> : '3'}
                 </div>
-                <span className={`text-sm font-medium ${isStep3Complete ? 'text-white' : 'text-white/50'}`}>Date</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-white/30" />
-              <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border ${isStep4Complete ? 'bg-white/10 text-white border-white/30' : 'bg-white/5 text-white/50 border-white/10'}`}>
-                  {isStep4Complete ? <Check className="w-5 h-5" /> : '4'}
-                </div>
-                <span className={`text-sm font-medium ${isStep4Complete ? 'text-white' : 'text-white/50'}`}>Time</span>
+                <span className={`text-sm font-medium ${isStep3Complete ? 'text-white' : 'text-white/50'}`}>Time</span>
               </div>
             </div>
           </div>
@@ -325,8 +412,8 @@ export const BookingPage = () => {
                         setSelectedTeamMember(member.id);
                         // Reset subsequent steps when employee changes
                         setSelectedServices([]);
-                        setSelectedDate('');
                         setSelectedSlot('');
+                        setSelectedSlotDate('');
                       }}
                       className={`cursor-pointer border-2 rounded-lg p-4 transition-all ${
                         selectedTeamMember === member.id
@@ -341,8 +428,8 @@ export const BookingPage = () => {
                           e.preventDefault();
                           setSelectedTeamMember(member.id);
                           setSelectedServices([]);
-                          setSelectedDate('');
                           setSelectedSlot('');
+                          setSelectedSlotDate('');
                         }
                       }}
                     >
@@ -450,12 +537,12 @@ export const BookingPage = () => {
                                 {service.description && (
                                   <p className="text-sm text-white/70 mt-1">{service.description}</p>
                                 )}
-                                <div className="flex items-center gap-4 mt-2 text-sm text-white/80">
-                                  <span className="font-medium">
+                                <div className="flex items-center gap-4 mt-2 text-sm">
+                                  <span className="font-medium text-white">
                                     ${Number(service.price).toFixed(2)}
                                   </span>
-                                  <span>•</span>
-                                  <span>{service.duration} min</span>
+                                  <span className="text-white/80">•</span>
+                                  <span className="text-white/80">{service.duration} min</span>
                                 </div>
                               </div>
                               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
@@ -490,85 +577,139 @@ export const BookingPage = () => {
               </motion.div>
             )}
 
-            {/* STEP 3: Date Selection (only show if step 2 complete) */}
+            {/* STEP 3: Time Slot Selection (auto-shows after step 2, with optional date filter) */}
             {isStep2Complete && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-2xl font-bold text-white mb-4">Step 3: Select Date</h2>
-                <div className="relative max-w-md">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
-                  <input
-                    type="date"
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full pl-10 pr-4 py-3 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all"
-                    value={selectedDate}
-                    onChange={(e) => {
-                      setSelectedDate(e.target.value);
-                      setSelectedSlot(''); // Reset slot when date changes
-                    }}
-                  />
-                </div>
-              </motion.div>
-            )}
-
-            {/* STEP 4: Time Slot Selection (only show if step 3 complete) */}
-            {isStep3Complete && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                transition={{ duration: 0.3 }}
-              >
                 <h2 className="text-2xl font-bold text-white mb-4">
-                  Step 4: Select Time Slot
+                  Step 3: Select Time Slot
                 </h2>
 
+                {/* Context Banner */}
                 <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-4">
                   <p className="text-sm text-white/90">
-                    <strong>Looking for {getTotalDuration()}-minute slots</strong> with {getSelectedTeamMemberName()} on{' '}
-                    {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
+                    <strong>Looking for {getTotalDuration()}-minute slots</strong> with {getSelectedTeamMemberName()}
+                    {selectedDate && (
+                      <> on {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                      })}</>
+                    )}
                   </p>
                 </div>
 
-                {isLoadingSlots ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
-                    <p className="mt-2 text-white/70">Finding available slots...</p>
+                {/* Optional Date Filter */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-white/90 mb-2">
+                    Filter by Date (optional)
+                  </label>
+                  <div className="flex gap-2 items-center">
+                    <div className="relative flex-1 max-w-md">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
+                      <input
+                        type="date"
+                        min={new Date().toISOString().split('T')[0]}
+                        max={getNext7Days()[6]}
+                        className="w-full pl-10 pr-4 py-3 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-white/30 focus:border-white/30 transition-all"
+                        value={selectedDate}
+                        onChange={(e) => {
+                          setSelectedDate(e.target.value);
+                          setSelectedSlot(''); // Reset slot when filter changes
+                          setSelectedSlotDate('');
+                        }}
+                      />
+                    </div>
+                    {selectedDate && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedDate('');
+                          setSelectedSlot('');
+                          setSelectedSlotDate('');
+                        }}
+                        className="px-4 py-3 bg-white/10 hover:bg-white/15 text-white rounded-lg border border-white/20 transition-all text-sm font-medium"
+                      >
+                        Show All Dates
+                      </button>
+                    )}
                   </div>
-                ) : availableSlots.length === 0 ? (
-                  <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 px-4 py-3 rounded-lg">
-                    No {getTotalDuration()}-minute slots available on this day. Try selecting a different date.
+                  {!selectedDate && (
+                    <p className="text-xs text-white/60 mt-2">
+                      Showing all available slots for the next 7 days
+                    </p>
+                  )}
+                </div>
+
+                {/* Loading State */}
+                {isLoadingSlots ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white/50 mx-auto mb-4"></div>
+                    <p className="text-white/70 text-lg">Finding available slots...</p>
+                    <p className="text-white/50 text-sm mt-2">
+                      {selectedDate ? 'Checking this date' : 'Checking the next 7 days'}
+                    </p>
+                  </div>
+                ) : groupedSlots.length === 0 ? (
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 px-6 py-4 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold mb-1">No slots available</p>
+                        <p className="text-sm">
+                          {selectedDate
+                            ? `No ${getTotalDuration()}-minute slots available on this day. Try selecting a different date.`
+                            : `No ${getTotalDuration()}-minute slots available in the next 7 days. Try selecting different services or check back later.`
+                          }
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {availableSlots.map((slot, index) => (
-                      <motion.button
-                        key={index}
-                        type="button"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setSelectedSlot(slot.time)}
-                        className={`p-3 rounded-lg border-2 transition-all text-center ${
-                          selectedSlot === slot.time
-                            ? 'border-white/30 bg-white/20 text-white shadow-md'
-                            : 'border-white/20 hover:border-white/30 bg-white/5 text-white'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          <Clock className="w-4 h-4" />
-                          <span className="font-semibold text-sm">{slot.time}</span>
+                  <div className="space-y-6">
+                    {groupedSlots.map(({ date, dateFormatted, slots }) => (
+                      <div key={date} className="space-y-3">
+                        {/* Date Header */}
+                        <h3 className="text-lg font-semibold text-white/90 flex items-center gap-2">
+                          <Calendar className="w-5 h-5" />
+                          {dateFormatted}
+                          <span className="text-sm font-normal text-white/60">
+                            ({slots.length} slot{slots.length !== 1 ? 's' : ''})
+                          </span>
+                        </h3>
+
+                        {/* Time Slots Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                          {slots.map((slot, index) => (
+                            <motion.button
+                              key={`${date}-${index}`}
+                              type="button"
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => {
+                                setSelectedSlot(slot.time);
+                                setSelectedSlotDate(date);
+                              }}
+                              className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                selectedSlot === slot.time && selectedSlotDate === date
+                                  ? 'border-white/50 bg-white/20 text-white shadow-lg ring-2 ring-white/30'
+                                  : 'border-white/20 hover:border-white/30 bg-white/5 text-white hover:bg-white/10'
+                              }`}
+                            >
+                              <div className="flex items-center justify-center gap-1 mb-1">
+                                <Clock className="w-4 h-4" />
+                                <span className="font-semibold text-sm">{slot.time}</span>
+                              </div>
+                              <div className="text-xs opacity-80">
+                                to {slot.endTime}
+                              </div>
+                            </motion.button>
+                          ))}
                         </div>
-                        <div className="text-xs opacity-80">
-                          to {slot.endTime}
-                        </div>
-                      </motion.button>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -604,7 +745,7 @@ export const BookingPage = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={isSubmitting || !isStep4Complete}
+              disabled={isSubmitting || !isStep3Complete}
               className="w-full bg-white/10 text-white font-bold py-4 rounded-lg border border-white/20 hover:bg-white/15 hover:border-white/30 shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting

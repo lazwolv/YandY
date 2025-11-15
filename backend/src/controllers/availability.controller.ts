@@ -247,9 +247,12 @@ export const addBlockedSlot = async (req: Request, res: Response) => {
 // Get all team members with their basic info
 export const getAllTeamMembers = async (_req: Request, res: Response) => {
   try {
+    // Only return team members who are available AND have a default schedule set
+    // This filters out mock employees like Sarah Thompson who haven't been configured yet
     const teamMembers = await prisma.teamMember.findMany({
       where: {
         isAvailable: true,
+        hasDefaultSchedule: true, // Only show team members with configured schedules
       },
       include: {
         user: {
