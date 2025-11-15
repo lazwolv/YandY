@@ -23,7 +23,6 @@ export const BookingPage = () => {
   // Data loading states
   const [services, setServices] = useState<Service[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [groupedSlots, setGroupedSlots] = useState<GroupedSlots[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [isLoadingTeamMembers, setIsLoadingTeamMembers] = useState(true);
@@ -93,7 +92,6 @@ export const BookingPage = () => {
   // Date is now optional - if not selected, fetch next 7 days
   useEffect(() => {
     if (!selectedTeamMember || selectedServices.length === 0) {
-      setAvailableSlots([]);
       setGroupedSlots([]);
       setSelectedSlot('');
       setSelectedSlotDate('');

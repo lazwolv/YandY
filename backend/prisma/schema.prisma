@@ -97,16 +97,17 @@ model RefreshToken {
 }
 
 model TeamMember {
-  id          String   @id @default(uuid())
-  userId      String   @unique @map("user_id")
-  bio         String?
-  bioEs       String?  @map("bio_es")
-  specialty   String
-  specialtyEs String?  @map("specialty_es")
-  isAvailable Boolean  @default(true) @map("is_available")
-  imageUrl    String?  @map("image_url")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                 String   @id @default(uuid())
+  userId             String   @unique @map("user_id")
+  bio                String?
+  bioEs              String?  @map("bio_es")
+  specialty          String
+  specialtyEs        String?  @map("specialty_es")
+  isAvailable        Boolean  @default(true) @map("is_available")
+  hasDefaultSchedule Boolean  @default(false) @map("has_default_schedule")
+  imageUrl           String?  @map("image_url")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments  Appointment[]

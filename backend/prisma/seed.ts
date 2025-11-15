@@ -198,7 +198,7 @@ async function main() {
     // Create team member profile
     const teamMember = await prisma.teamMember.upsert({
       where: { userId: user.id },
-      update: {},
+      update: { hasDefaultSchedule: emp.hasDefaultSchedule },
       create: {
         userId: user.id,
         specialty: emp.specialty,
@@ -206,6 +206,7 @@ async function main() {
         bio: emp.bio,
         bioEs: emp.bioEs,
         isAvailable: true,
+        hasDefaultSchedule: emp.hasDefaultSchedule,
       },
     });
 
